@@ -10,10 +10,10 @@ import network
 
 
 class VGG16(nn.Module):
-    def __init__(self, bn=False):
+    def __init__(self, bn=False, channel_in=3):
         super(VGG16, self).__init__()
 
-        self.conv1 = nn.Sequential(Conv2d(3, 64, 3, same_padding=True, bn=bn),
+        self.conv1 = nn.Sequential(Conv2d(channel_in, 64, 3, same_padding=True, bn=bn),
                                    Conv2d(64, 64, 3, same_padding=True, bn=bn),
                                    nn.MaxPool2d(2))
         self.conv2 = nn.Sequential(Conv2d(64, 128, 3, same_padding=True, bn=bn),

@@ -34,10 +34,10 @@ def log_print(text, color=None, on_color=None, attrs=None):
 
 # hyper-parameters
 # ------------
-imdb_name = 'voc_2007_trainval'
-cfg_file = 'experiments/cfgs/faster_rcnn_end2end.yml'
+imdb_name = 'sunrgbd_train_rgb_i_100_8bits'
+cfg_file = 'experiments/cfgs/faster_rcnn_end2end_sunrgbd.yml'
 pretrained_model = 'data/pretrained_model/VGG_imagenet.npy'
-output_dir = 'models/saved_model3'
+output_dir = 'models/sunrgbd_rgb100/'
 
 start_step = 0
 end_step = 100000

@@ -14,6 +14,8 @@ import numpy as np
 from .pascal_voc import pascal_voc
 from .imagenet3d import imagenet3d
 from .kitti import kitti
+from .sunrgbd import sunrgbd
+from .inout import inout
 from .kitti_tracking import kitti_tracking
 from .nthu import nthu
 from .coco import coco
@@ -43,6 +45,19 @@ for year in ['2007', '2012', '0712']:
         name = 'kittivoc_{}'.format(split)
         # print name
         __sets[name] = (lambda split=split: kittivoc(split))
+
+# # SUNRGBD dataset
+for split in ['train', 'test']:
+    for encoding in ['rgb_i_100_8bits', 'd_raw_HHA_8bits']:
+        name = 'sunrgbd_{}_{}'.format(split,encoding)
+        __sets[name] = (lambda split=split, encoding=encoding: sunrgbd(split,encoding))
+
+# # InOut dataset
+for split in ['train', 'test']:
+    for encoding in ['Images', 'Depth']:
+        name = 'inout_{}_{}'.format(split,encoding)
+        __sets[name] = (lambda split=split, encoding=encoding: inout(split,encoding))
+
 
 # # KITTI dataset
 for split in ['train', 'val', 'trainval', 'test']:

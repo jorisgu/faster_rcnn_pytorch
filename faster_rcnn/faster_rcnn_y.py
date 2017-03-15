@@ -33,10 +33,10 @@ class RPN(nn.Module):
     _feat_stride = [16, ]
     anchor_scales = [8, 16, 32]
 
-    def __init__(self):
+    def __init__(self,channel_in=3):
         super(RPN, self).__init__()
 
-        self.features = VGG16(bn=False)
+        self.features = VGG16(bn=False, channel_in=channel_in)
         self.conv1 = Conv2d(512, 512, 3, same_padding=True)
         self.score_conv = Conv2d(512, len(self.anchor_scales) * 3 * 2, 1, relu=False, same_padding=False)
         self.bbox_conv = Conv2d(512, len(self.anchor_scales) * 3 * 4, 1, relu=False, same_padding=False)
@@ -170,7 +170,7 @@ class RPN(nn.Module):
             own_dict[key].copy_(param)
 
 
-class FasterRCNN(nn.Module):
+class FasterRCNN_y(nn.Module):
     n_classes = 21
     classes = np.asarray(['__background__',
                        'aeroplane', 'bicycle', 'bird', 'boat',
@@ -183,15 +183,17 @@ class FasterRCNN(nn.Module):
     MAX_SIZE = 1000
 
     def __init__(self, classes=None, debug=False):
-        super(FasterRCNN, self).__init__()
+        super(FasterRCNN_y, self).__init__()
 
         if classes is not None:
             self.classes = classes
             self.n_classes = len(classes)
 
-        self.rpn = RPN()
+        self.rpn_0 = RPN()
+        self.rpn_1 = RPN()
+        # self.rpn_1 = RPN(channel_in=1)
         self.roi_pool = RoIPool(7, 7, 1.0/16)
-        self.fc6 = FC(512 * 7 * 7, 4096)
+        self.fc6 = FC(1024 * 7 * 7, 4096) # 1024 instead of 512
         self.fc7 = FC(4096, 4096)
         self.score_fc = FC(4096, self.n_classes, relu=False)
         self.bbox_fc = FC(4096, self.n_classes * 4, relu=False)
@@ -211,9 +213,12 @@ class FasterRCNN(nn.Module):
         # print self.rpn.loss_box
         return self.cross_entropy + self.loss_box * 10
 
-    def forward(self, im_data, im_info, gt_boxes=None, gt_ishard=None, dontcare_areas=None):
-        features, rois = self.rpn(im_data, im_info, gt_boxes, gt_ishard, dontcare_areas)
+    def forward(self, im_data_0, im_data_1, im_info, gt_boxes=None, gt_ishard=None, dontcare_areas=None):
 
+        features_0, rois_0 = self.rpn_0(im_data_0, im_info, gt_boxes, gt_ishard, dontcare_areas)
+        features_1, rois_1 = self.rpn_1(im_data_1, im_info, gt_boxes, gt_ishard, dontcare_areas)
+        rois = torch.cat((rois_0,rois_1))
+        features = torch.cat((features_0,features_1),1)
         if self.training:
             roi_data = self.proposal_target_layer(rois, gt_boxes, gt_ishard, dontcare_areas, self.n_classes)
             rois = roi_data[0]
@@ -375,7 +380,8 @@ class FasterRCNN(nn.Module):
         return blob, np.array(im_scale_factors)
 
     def load_from_npz(self, params):
-        self.rpn.load_from_npz(params)
+        self.rpn_0.load_from_npz(params)
+        self.rpn_1.load_from_npz(params)
 
         pairs = {'fc6.fc': 'fc6', 'fc7.fc': 'fc7', 'score_fc.fc': 'cls_score', 'bbox_fc.fc': 'bbox_pred'}
         own_dict = self.state_dict()

@@ -4,11 +4,11 @@ import numpy as np
 from datetime import datetime
 
 from faster_rcnn import network
-from faster_rcnn.faster_rcnn import FasterRCNN, RPN
+from faster_rcnn.faster_rcnn_y import FasterRCNN_y, RPN
 from faster_rcnn.utils.timer import Timer
 
 import faster_rcnn.roi_data_layer.roidb as rdl_roidb
-from faster_rcnn.roi_data_layer.layer import RoIDataLayer
+from faster_rcnn.roi_data_layer.layer_fuse import RoIDataLayer
 from faster_rcnn.datasets.factory import get_imdb
 from faster_rcnn.fast_rcnn.config import cfg, cfg_from_file
 
@@ -34,10 +34,11 @@ def log_print(text, color=None, on_color=None, attrs=None):
 
 # hyper-parameters
 # ------------
-imdb_name = 'voc_2007_trainval'
-cfg_file = 'experiments/cfgs/faster_rcnn_end2end.yml'
+imdb_name_0 = 'inout_train_Images'
+imdb_name_1 = 'inout_train_Depth'
+cfg_file = 'experiments/cfgs/faster_rcnn_end2end_inout.yml'
 pretrained_model = 'data/pretrained_model/VGG_imagenet.npy'
-output_dir = 'models/saved_model3'
+output_dir = 'models/inout_Depth/'
 
 start_step = 0
 end_step = 100000
@@ -64,15 +65,18 @@ disp_interval = cfg.TRAIN.DISPLAY
 log_interval = cfg.TRAIN.LOG_IMAGE_ITERS
 
 # load data
-imdb = get_imdb(imdb_name)
-rdl_roidb.prepare_roidb(imdb)
-roidb = imdb.roidb
-data_layer = RoIDataLayer(roidb, imdb.num_classes)
+imdb_0 = get_imdb(imdb_name_0)
+imdb_1 = get_imdb(imdb_name_1)
+rdl_roidb.prepare_roidb(imdb_0)
+rdl_roidb.prepare_roidb(imdb_1)
+roidb_0 = imdb_0.roidb
+roidb_1 = imdb_1.roidb
+data_layer = RoIDataLayer(roidb_0, roidb_1, imdb_0.num_classes)
 
 # load net
-net = FasterRCNN(classes=imdb.classes, debug=_DEBUG)
+net = FasterRCNN_y(classes=imdb_0.classes, debug=_DEBUG)
 network.weights_normal_init(net, dev=0.01)
-network.load_pretrained_npy(net, pretrained_model)
+network.load_pretrained_npy_y(net, pretrained_model)
 # model_file = '/media/longc/Data/models/VGGnet_fast_rcnn_iter_70000.h5'
 # model_file = 'models/saved_model3/faster_rcnn_60000.h5'
 # network.load_net(model_file, net)
@@ -85,6 +89,7 @@ net.cuda()
 net.train()
 
 params = list(net.parameters())
+    
 # optimizer = torch.optim.Adam(params[-8:], lr=lr)
 optimizer = torch.optim.SGD(params[8:], lr=lr, momentum=momentum, weight_decay=weight_decay)
 
