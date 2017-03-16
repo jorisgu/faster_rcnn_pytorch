@@ -1,10 +1,28 @@
+
+# coding: utf-8
+
+# In[1]:
+#
+# get_ipython().system(u'cd /home/jguerry/workspace/jg_dl/faster_rcnn_pytorch')
+#
+#
+# # In[2]:
+#
+pytorchpath = '/data02/jguerry/jg_pyt/'
+# import sys
+# if not pytorchpath in sys.path:
+#     sys.path.append(pytorchpath)
+
+
+
+
 import os
 import torch
 import numpy as np
 from datetime import datetime
 
 from faster_rcnn import network
-from faster_rcnn.faster_rcnn_y import FasterRCNN_y, RPN
+from faster_rcnn.faster_rcnn_y import FasterRCNN_y
 from faster_rcnn.utils.timer import Timer
 
 import faster_rcnn.roi_data_layer.roidb as rdl_roidb
@@ -16,12 +34,6 @@ try:
     from termcolor import cprint
 except ImportError:
     cprint = None
-
-try:
-    from pycrayon import CrayonClient
-except ImportError:
-    1
-CrayonClient = None
 
 
 def log_print(text, color=None, on_color=None, attrs=None):
@@ -36,9 +48,9 @@ def log_print(text, color=None, on_color=None, attrs=None):
 # ------------
 imdb_name_0 = 'inout_train_Images'
 imdb_name_1 = 'inout_train_Depth'
-cfg_file = 'experiments/cfgs/faster_rcnn_end2end_inout.yml'
-pretrained_model = 'data/pretrained_model/VGG_imagenet.npy'
-output_dir = 'models/inout_Depth/'
+cfg_file = pytorchpath+'experiments/cfgs/faster_rcnn_end2end_inout.yml'
+pretrained_model = pytorchpath+'data/pretrained_model/VGG_imagenet.npy'
+output_dir = pytorchpath+'models/inout_y/'
 
 start_step = 0
 end_step = 100000
@@ -73,6 +85,9 @@ roidb_0 = imdb_0.roidb
 roidb_1 = imdb_1.roidb
 data_layer = RoIDataLayer(roidb_0, roidb_1, imdb_0.num_classes)
 
+
+# In[5]:
+
 # load net
 net = FasterRCNN_y(classes=imdb_0.classes, debug=_DEBUG)
 network.weights_normal_init(net, dev=0.01)
@@ -88,25 +103,26 @@ network.load_pretrained_npy_y(net, pretrained_model)
 net.cuda()
 net.train()
 
-params = list(net.parameters())
-    
-# optimizer = torch.optim.Adam(params[-8:], lr=lr)
-optimizer = torch.optim.SGD(params[8:], lr=lr, momentum=momentum, weight_decay=weight_decay)
+# params = list(net.parameters())
+
+
+# In[6]:
+
+frozen_params = map(id, net.rpn_0.features.conv1.parameters())+map(id, net.rpn_0.features.conv2.parameters())+map(id, net.rpn_1.features.conv1.parameters())+map(id, net.rpn_1.features.conv2.parameters())
+
+base_params = filter(lambda p: id(p) not in frozen_params, net.parameters())
+
+
+# In[7]:
+
+# optimizer = torch.optim.SGD(params[8:], lr=lr, momentum=momentum, weight_decay=weight_decay)
+optimizer = torch.optim.SGD(base_params, lr=lr, momentum=momentum, weight_decay=weight_decay)
+
+
+# In[15]:
 
 if not os.path.exists(output_dir):
     os.mkdir(output_dir)
-
-# tensorboad
-use_tensorboard = use_tensorboard and CrayonClient is not None
-if use_tensorboard:
-    cc = CrayonClient(hostname='127.0.0.1')
-    if remove_all_log:
-        cc.remove_all_experiments()
-    if exp_name is None:
-        exp_name = datetime.now().strftime('vgg16_%m-%d_%H-%M')
-        exp = cc.create_experiment(exp_name)
-    else:
-        exp = cc.open_experiment(exp_name)
 
 # training
 train_loss = 0
@@ -119,15 +135,16 @@ for step in range(start_step, end_step+1):
 
     # get one batch
     blobs = data_layer.forward()
-    im_data = blobs['data']
+    im_data_0 = blobs['data']
+    im_data_1 = blobs['data_']
     im_info = blobs['im_info']
     gt_boxes = blobs['gt_boxes']
     gt_ishard = blobs['gt_ishard']
     dontcare_areas = blobs['dontcare_areas']
 
     # forward
-    net(im_data, im_info, gt_boxes, gt_ishard, dontcare_areas)
-    loss = net.loss + net.rpn.loss
+    net(im_data_0, im_data_1, im_info, gt_boxes, gt_ishard, dontcare_areas)
+    loss = net.loss + net.rpn_0.loss + net.rpn_1.loss
 
     if _DEBUG:
         tp += float(net.tp)
@@ -154,23 +171,13 @@ for step in range(start_step, end_step+1):
 
         if _DEBUG:
             log_print('\tTP: %.2f%%, TF: %.2f%%, fg/bg=(%d/%d)' % (tp/fg*100., tf/bg*100., fg/step_cnt, bg/step_cnt))
-            log_print('\trpn_cls: %.4f, rpn_box: %.4f, rcnn_cls: %.4f, rcnn_box: %.4f' % (
-                net.rpn.cross_entropy.data.cpu().numpy()[0], net.rpn.loss_box.data.cpu().numpy()[0],
+            log_print('\trpn0_cls: %.4f, rpn0_box: %.4f,rpn1_cls: %.4f, rpn1_box: %.4f, rcnn_cls: %.4f, rcnn_box: %.4f' % (
+                net.rpn_0.cross_entropy.data.cpu().numpy()[0], net.rpn_0.loss_box.data.cpu().numpy()[0],
+                net.rpn_1.cross_entropy.data.cpu().numpy()[0], net.rpn_1.loss_box.data.cpu().numpy()[0],
                 net.cross_entropy.data.cpu().numpy()[0], net.loss_box.data.cpu().numpy()[0])
             )
         re_cnt = True
 
-    if use_tensorboard and step % log_interval == 0:
-        exp.add_scalar_value('train_loss', train_loss / step_cnt, step=step)
-        exp.add_scalar_value('learning_rate', lr, step=step)
-        if _DEBUG:
-            exp.add_scalar_value('true_positive', tp/fg*100., step=step)
-            exp.add_scalar_value('true_negative', tf/bg*100., step=step)
-            losses = {'rpn_cls': float(net.rpn.cross_entropy.data.cpu().numpy()[0]),
-                      'rpn_box': float(net.rpn.loss_box.data.cpu().numpy()[0]),
-                      'rcnn_cls': float(net.cross_entropy.data.cpu().numpy()[0]),
-                      'rcnn_box': float(net.loss_box.data.cpu().numpy()[0])}
-            exp.add_scalar_dict(losses, step=step)
 
     if (step % 10000 == 0) and step > 0:
         save_name = os.path.join(output_dir, 'faster_rcnn_{}.h5'.format(step))
@@ -178,7 +185,7 @@ for step in range(start_step, end_step+1):
         print('save model: {}'.format(save_name))
     if step in lr_decay_steps:
         lr *= lr_decay
-        optimizer = torch.optim.SGD(params[8:], lr=lr, momentum=momentum, weight_decay=weight_decay)
+        optimizer = torch.optim.SGD(base_params, lr=lr, momentum=momentum, weight_decay=weight_decay)
 
     if re_cnt:
         tp, tf, fg, bg = 0., 0., 0, 0
@@ -186,3 +193,6 @@ for step in range(start_step, end_step+1):
         step_cnt = 0
         t.tic()
         re_cnt = False
+
+
+# In[ ]:
