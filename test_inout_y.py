@@ -118,7 +118,7 @@ def test_net_y(name, net_x, imdb_0, imdb_1, max_per_image=300, thresh=0.05, vis=
         im_1 = cv2.imread(imdb_1.image_path_at(i))
 
         _t['im_detect'].tic()
-        scores_0, scores_1 = im_detect(net_x, im_0, im_1)
+        scores_0, boxes_0 = im_detect(net_x, im_0, im_1)
         detect_time = _t['im_detect'].toc(average=False)
 
         _t['misc'].tic()
