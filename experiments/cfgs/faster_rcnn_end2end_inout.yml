@@ -4,7 +4,7 @@ IS_MULTISCALE: False
 NET_NAME: VGGnet
 ANCHOR_SCALES: [8, 16, 32]
 NCLASSES: 2
-DATA_DIR: /c16/THESE.JORIS/datasets/InOutDoorPeople/
+DATA_DIR: /data02/jguerry/datasets/InOutDoorPeople/
 TRAIN:
   OHEM: False
   RPN_BATCHSIZE: 300
