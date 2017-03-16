@@ -67,8 +67,8 @@ def im_detect(net_x, image_0, image_1):
         boxes (ndarray): R x (4*K) array of predicted bounding boxes
     """
 
-    im_data_0, im_scales_0 = net_x.frcnn_0.get_image_blob(image_0)
-    im_data_1, im_scales_1 = net_x.frcnn_1.get_image_blob(image_1)
+    im_data_0, im_scales_0 = net_x.get_image_blob(image_0)
+    im_data_1, im_scales_1 = net_x.get_image_blob(image_1)
 
     im_info = np.array(
         [[im_data_0.shape[1], im_data_0.shape[2], im_scales_0[0]]],
