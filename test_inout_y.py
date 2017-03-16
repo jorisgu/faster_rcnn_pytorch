@@ -23,7 +23,7 @@ imdb_name_1 = 'inout_test_Depth'
 
 cfg_file = pytorchpath+'experiments/cfgs/faster_rcnn_end2end_inout.yml'
 
-trained_model = '/home/jguerry/workspace/jg_dl/faster_rcnn_pytorch/models/inout_y/faster_rcnn_100000.h5'
+trained_model = pytorchpath+'models/inout_y/faster_rcnn_100000.h5'
 
 output_dir_detections = pytorchpath+'output/faster_rcnn_inout_exp/inout_test_x/detections/'
 
