@@ -30,7 +30,7 @@ output_dir_detections = pytorchpath+'output/faster_rcnn_inout_exp/inout_test_x/d
 rand_seed = 1024
 
 save_name = 'inout_x_10000'
-max_per_image = 300
+max_per_image = 600
 thresh = 0.05
 vis = True
 sav = True
