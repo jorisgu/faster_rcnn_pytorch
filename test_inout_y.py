@@ -118,7 +118,7 @@ def test_net_y(name, net_x, imdb_0, imdb_1, max_per_image=300, thresh=0.05, vis=
         im_1 = cv2.imread(imdb_1.image_path_at(i))
 
         _t['im_detect'].tic()
-        scores_0, boxes_0 = im_detect(net_x, im_0, im_1)
+        scores, boxes = im_detect(net_x, im_0, im_1)
         detect_time = _t['im_detect'].toc(average=False)
 
         _t['misc'].tic()
@@ -127,30 +127,18 @@ def test_net_y(name, net_x, imdb_0, imdb_1, max_per_image=300, thresh=0.05, vis=
             im2show = np.copy(im_0)
 
         # skip j = 0, because it's the background class
-        for j in xrange(1, imdb_0.num_classes):
 
-            inds_0 = np.where(scores_0[:, j] > thresh)[0]
-            # print inds_0.shape
-            # print inds_1.shape
-
-            cls_scores_0 = scores_0[inds_0, j]
-
-            # print cls_scores_0.shape
-            # print cls_scores_1.shape
-            # print cls_scores_x.shape
-
-            cls_boxes_0 = boxes_0[inds_0, j * 4:(j + 1) * 4]
-
-            # print cls_boxes_0.shape
-            # print cls_boxes_1.shape
-            # print cls_boxes_x.shape
-
-
-            keep = nms(cls_boxes_0, cfg.TEST.NMS)
-            cls_boxes_0 = cls_boxes_0[keep, :]
+        for j in xrange(1, imdb.num_classes):
+            inds = np.where(scores[:, j] > thresh)[0]
+            cls_scores = scores[inds, j]
+            cls_boxes = boxes[inds, j * 4:(j + 1) * 4]
+            cls_dets = np.hstack((cls_boxes, cls_scores[:, np.newaxis])) \
+                .astype(np.float32, copy=False)
+            keep = nms(cls_dets, cfg.TEST.NMS)
+            cls_dets = cls_dets[keep, :]
             if vis:
-                im2show = vis_detections(im2show, imdb_0.classes[j], cls_boxes_0)
-            all_boxes[j][i] = cls_boxes_0
+                im2show = vis_detections(im2show, imdb.classes[j], cls_dets)
+            all_boxes[j][i] = cls_dets
 
         # Limit to max_per_image detections *over all classes*
         if max_per_image > 0:
