@@ -128,7 +128,7 @@ def test_net_y(name, net_x, imdb_0, imdb_1, max_per_image=300, thresh=0.05, vis=
 
         # skip j = 0, because it's the background class
 
-        for j in xrange(1, imdb.num_classes):
+        for j in xrange(1, imdb_0.num_classes):
             inds = np.where(scores[:, j] > thresh)[0]
             cls_scores = scores[inds, j]
             cls_boxes = boxes[inds, j * 4:(j + 1) * 4]
@@ -137,7 +137,7 @@ def test_net_y(name, net_x, imdb_0, imdb_1, max_per_image=300, thresh=0.05, vis=
             keep = nms(cls_dets, cfg.TEST.NMS)
             cls_dets = cls_dets[keep, :]
             if vis:
-                im2show = vis_detections(im2show, imdb.classes[j], cls_dets)
+                im2show = vis_detections(im2show, imdb_0.classes[j], cls_dets)
             all_boxes[j][i] = cls_dets
 
         # Limit to max_per_image detections *over all classes*
