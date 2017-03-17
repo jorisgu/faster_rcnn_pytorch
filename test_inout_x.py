@@ -36,7 +36,7 @@ trained_model_1 = pytorchpath+'models/inout_Depth/faster_rcnn_10000.h5'
 
 output_dir = pytorchpath+'output/faster_rcnn_inout_exp/'
 output_dir_detections = output_dir+imdb_name_0+'_'+imdb_name_1+'/detections_'+save_name+'/'
-det_file = output_dir+imdb_name+'/detections_'+save_name+'.pkl'
+det_file = output_dir+imdb_name_0+'_'+imdb_name_1+'/detections_'+save_name+'.pkl'
 
 mkdir_p(output_dir_detections)
 
