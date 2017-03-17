@@ -34,10 +34,11 @@ def log_print(text, color=None, on_color=None, attrs=None):
 
 # hyper-parameters
 # ------------
+pytorchpath = '/data02/jguerry/jg_pyt/'
 imdb_name = 'inout_seq0_Images'
-cfg_file = 'experiments/cfgs/faster_rcnn_end2end_inout.yml'
-pretrained_model = 'data/pretrained_model/VGG_imagenet.npy'
-output_dir = 'models/inout_seq0_Images/'
+cfg_file = pytorchpath+'experiments/cfgs/faster_rcnn_end2end_inout.yml'
+pretrained_model = pytorchpath+'data/pretrained_model/VGG_imagenet.npy'
+output_dir = pytorchpath+'models/inout_seq0_Images/'
 
 start_step = 0
 end_step = 100000

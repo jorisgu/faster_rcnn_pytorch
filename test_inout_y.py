@@ -1,10 +1,11 @@
-pytorchpath = '/data02/jguerry/jg_pyt/'
+
 
 import os
 import torch
 import cv2
 import cPickle
 import numpy as np
+import errno
 
 from faster_rcnn import network
 from faster_rcnn.faster_rcnn_y import FasterRCNN_y
@@ -15,9 +16,18 @@ from faster_rcnn.fast_rcnn.bbox_transform import bbox_transform_inv, clip_boxes
 from faster_rcnn.datasets.factory import get_imdb
 from faster_rcnn.fast_rcnn.config import cfg, cfg_from_file, get_output_dir
 
-
+def mkdir_p(path):
+    try:
+        os.makedirs(path)
+    except OSError as exc:  # Python >2.5
+        if exc.errno == errno.EEXIST and os.path.isdir(path):
+            pass
+        else:
+            raise
 # hyper-parameters
 # ------------
+pytorchpath = '/data02/jguerry/jg_pyt/'
+
 imdb_name_0 = 'inout_test_Images'
 imdb_name_1 = 'inout_test_Depth'
 
@@ -25,11 +35,13 @@ cfg_file = pytorchpath+'experiments/cfgs/faster_rcnn_end2end_inout.yml'
 
 trained_model = pytorchpath+'models/inout_y/faster_rcnn_10000.h5'
 
-output_dir_detections = pytorchpath+'output/faster_rcnn_inout_exp/inout_test_x/detections/'
+output_dir_detections = pytorchpath+'output/faster_rcnn_inout_exp/inout_test_y/detections/'
+mkdir_p(output_dir_detections)
+det_file = pytorchpath+'output/faster_rcnn_inout_exp/inout_test_y/detections_10000.pkl'
 
 rand_seed = 1024
 
-save_name = 'inout_x_1000'
+save_name = 'inout_y_10000'
 max_per_image = 600
 thresh = 0.05
 vis = True
@@ -94,7 +106,7 @@ def im_detect(net_x, image_0, image_1):
     return scores_0, pred_boxes_0
 
 
-def test_net_y(name, net_x, imdb_0, imdb_1, max_per_image=300, thresh=0.05, vis=False):
+def test_net_y(name, net_x, imdb_0, imdb_1, det_file, max_per_image=300, thresh=0.05, vis=False):
     """Test a Fast R-CNN network on an image database."""
     num_images = len(imdb_0.image_index)
     # all detections are collected into:
@@ -110,7 +122,6 @@ def test_net_y(name, net_x, imdb_0, imdb_1, max_per_image=300, thresh=0.05, vis=
     _t = {'im_detect': Timer(), 'misc': Timer()}
     # det_file_0 = os.path.join(output_dir_0, 'detections.pkl')
     # det_file_1 = os.path.join(output_dir_1, 'detections.pkl')
-    det_file_x = os.path.join(output_dir_0, 'detections_x.pkl')
 
     for i in range(num_images):
 
@@ -159,7 +170,7 @@ def test_net_y(name, net_x, imdb_0, imdb_1, max_per_image=300, thresh=0.05, vis=
         if sav:
             cv2.imwrite(output_dir_detections+str(i)+'.png', im2show)
 
-    with open(det_file_x, 'wb') as f:
+    with open(det_file, 'wb') as f:
         cPickle.dump(all_boxes, f, cPickle.HIGHEST_PROTOCOL)
 
     print 'Evaluating detections'
@@ -177,9 +188,9 @@ if __name__ == '__main__':
 
     net = FasterRCNN_y(classes=imdb_1.classes, debug=False)
     network.load_net(trained_model, net)
-    print('load model 1 successfully!')
+    print('load model successfully!')
     net.cuda()
     net.eval()
 
     # evaluation
-    test_net_y(save_name, net, imdb_0, imdb_1, max_per_image, thresh=thresh, vis=vis)
+    test_net_y(save_name, net, imdb_0, imdb_1, det_file ,max_per_image, thresh=thresh, vis=vis)

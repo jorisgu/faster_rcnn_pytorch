@@ -3,6 +3,7 @@ import torch
 import cv2
 import cPickle
 import numpy as np
+import errno
 
 from faster_rcnn import network
 from faster_rcnn.faster_rcnn_x import FasterRCNN, FasterRCNN_x
@@ -13,19 +14,29 @@ from faster_rcnn.fast_rcnn.bbox_transform import bbox_transform_inv, clip_boxes
 from faster_rcnn.datasets.factory import get_imdb
 from faster_rcnn.fast_rcnn.config import cfg, cfg_from_file, get_output_dir
 
+def mkdir_p(path):
+    try:
+        os.makedirs(path)
+    except OSError as exc:  # Python >2.5
+        if exc.errno == errno.EEXIST and os.path.isdir(path):
+            pass
+        else:
+            raise
 
 # hyper-parameters
 # ------------
 imdb_name_0 = 'inout_test_Images'
 imdb_name_1 = 'inout_test_Depth'
-cfg_file = 'experiments/cfgs/faster_rcnn_end2end_inout.yml'
+cfg_file = pytorchpath+'experiments/cfgs/faster_rcnn_end2end_inout.yml'
 # trained_model = '/media/longc/Data/models/VGGnet_fast_rcnn_iter_70000.h5'
 # trained_model = 'models/saved_model3/faster_rcnn_90000.h5'
 
-trained_model_0 = '/home/jguerry/workspace/jg_dl/faster_rcnn_pytorch/models/inout_Images/faster_rcnn_10000.h5'
-trained_model_1 = '/home/jguerry/workspace/jg_dl/faster_rcnn_pytorch/models/inout_Depth/faster_rcnn_10000.h5'
+trained_model_0 = pytorchpath+'models/inout_Images/faster_rcnn_10000.h5'
+trained_model_1 = pytorchpath+'models/inout_Depth/faster_rcnn_10000.h5'
 
-output_dir_detections = '/home/jguerry/workspace/jg_dl/faster_rcnn_pytorch/output/faster_rcnn_inout_exp/inout_test_x/detections/'
+output_dir_detections = pytorchpath+'output/faster_rcnn_inout_exp/inout_test_x/detections/'
+mkdir_p(output_dir_detections)
+det_file = pytorchpath+'output/faster_rcnn_inout_exp/inout_test_x/detections_10000.pkl'
 
 rand_seed = 1024
 
@@ -73,7 +84,7 @@ def im_detect(net_x, image_0, image_1):
     im_info = np.array(
         [[im_data_0.shape[1], im_data_0.shape[2], im_scales_0[0]]],
         dtype=np.float32)
-        
+
 
     cls_prob_0, bbox_pred_0, cls_prob_1, bbox_pred_1, rois = net_x(im_data_0, im_data_1, im_info)
     scores_0 = cls_prob_0.data.cpu().numpy()
@@ -97,7 +108,7 @@ def im_detect(net_x, image_0, image_1):
     return scores_0, scores_1, pred_boxes_0, pred_boxes_1
 
 
-def test_net_x(name, net_x, imdb_0, imdb_1, max_per_image=300, thresh=0.05, vis=False):
+def test_net_x(name, net_x, imdb_0, imdb_1, detfile, max_per_image=300, thresh=0.05, vis=False):
     """Test a Fast R-CNN network on an image database."""
     num_images = len(imdb_0.image_index)
     # all detections are collected into:
@@ -113,7 +124,7 @@ def test_net_x(name, net_x, imdb_0, imdb_1, max_per_image=300, thresh=0.05, vis=
     _t = {'im_detect': Timer(), 'misc': Timer()}
     # det_file_0 = os.path.join(output_dir_0, 'detections.pkl')
     # det_file_1 = os.path.join(output_dir_1, 'detections.pkl')
-    det_file_x = os.path.join(output_dir_0, 'detections_x.pkl')
+
 
     for i in range(num_images):
 
@@ -181,7 +192,7 @@ def test_net_x(name, net_x, imdb_0, imdb_1, max_per_image=300, thresh=0.05, vis=
         if sav:
             cv2.imwrite(output_dir_detections+str(i)+'.png', im2show)
 
-    with open(det_file_x, 'wb') as f:
+    with open(detfile, 'wb') as f:
         cPickle.dump(all_boxes, f, cPickle.HIGHEST_PROTOCOL)
 
     print 'Evaluating detections'
@@ -213,4 +224,4 @@ if __name__ == '__main__':
     net_x.cuda()
     net_x.eval()
     # evaluation
-    test_net_x(save_name, net_x, imdb_0, imdb_1, max_per_image, thresh=thresh, vis=vis)
+    test_net_x(save_name, net_x, imdb_0, imdb_1, det_file, max_per_image, thresh=thresh, vis=vis)
