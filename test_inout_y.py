@@ -41,6 +41,7 @@ det_file = output_dir+imdb_name_0+'_'+imdb_name_1+'/detections_'+save_name+'.pkl
 
 mkdir_p(output_dir_detections)
 
+cfg_file = pytorchpath+'experiments/cfgs/faster_rcnn_end2end_inout.yml'
 rand_seed = 1024
 
 max_per_image = 600
