@@ -25,19 +25,34 @@ def mkdir_p(path):
 
 # hyper-parameters
 # ------------
+pytorchpath = '/data02/jguerry/jg_pyt/'
+
 imdb_name_0 = 'inout_test_Images'
 imdb_name_1 = 'inout_test_Depth'
-cfg_file = pytorchpath+'experiments/cfgs/faster_rcnn_end2end_inout.yml'
-# trained_model = '/media/longc/Data/models/VGGnet_fast_rcnn_iter_70000.h5'
-# trained_model = 'models/saved_model3/faster_rcnn_90000.h5'
 
+save_name = 'inout_x_10000'
 trained_model_0 = pytorchpath+'models/inout_Images/faster_rcnn_10000.h5'
 trained_model_1 = pytorchpath+'models/inout_Depth/faster_rcnn_10000.h5'
 
-output_dir_detections = pytorchpath+'output/faster_rcnn_inout_exp/inout_test_x/detections/'
-mkdir_p(output_dir_detections)
-det_file = pytorchpath+'output/faster_rcnn_inout_exp/inout_test_x/detections_10000.pkl'
+output_dir = pytorchpath+'output/faster_rcnn_inout_exp/'
+output_dir_detections = output_dir+imdb_name+'/detections_'+save_name+'/'
+det_file = output_dir+imdb_name+'/detections_'+save_name+'.pkl'
 
+mkdir_p(output_dir_detections)
+
+
+
+
+
+
+
+
+
+
+
+
+
+cfg_file = pytorchpath+'experiments/cfgs/faster_rcnn_end2end_inout.yml'
 rand_seed = 1024
 
 save_name = 'inout_x_10000'
@@ -108,7 +123,7 @@ def im_detect(net_x, image_0, image_1):
     return scores_0, scores_1, pred_boxes_0, pred_boxes_1
 
 
-def test_net_x(name, net_x, imdb_0, imdb_1, detfile, max_per_image=300, thresh=0.05, vis=False):
+def test_net_x(net_x, imdb_0, imdb_1, max_per_image=300, thresh=0.05, vis=False):
     """Test a Fast R-CNN network on an image database."""
     num_images = len(imdb_0.image_index)
     # all detections are collected into:
@@ -117,13 +132,9 @@ def test_net_x(name, net_x, imdb_0, imdb_1, detfile, max_per_image=300, thresh=0
     all_boxes = [[[] for _ in xrange(num_images)]
                  for _ in xrange(imdb_0.num_classes)]
 
-    output_dir_0 = get_output_dir(imdb_0, name)
-    output_dir_1 = get_output_dir(imdb_1, name)
 
     # timers
     _t = {'im_detect': Timer(), 'misc': Timer()}
-    # det_file_0 = os.path.join(output_dir_0, 'detections.pkl')
-    # det_file_1 = os.path.join(output_dir_1, 'detections.pkl')
 
 
     for i in range(num_images):
@@ -192,11 +203,11 @@ def test_net_x(name, net_x, imdb_0, imdb_1, detfile, max_per_image=300, thresh=0
         if sav:
             cv2.imwrite(output_dir_detections+str(i)+'.png', im2show)
 
-    with open(detfile, 'wb') as f:
+    with open(det_file, 'wb') as f:
         cPickle.dump(all_boxes, f, cPickle.HIGHEST_PROTOCOL)
 
     print 'Evaluating detections'
-    imdb_0.evaluate_detections(all_boxes, output_dir_0)
+    imdb_0.evaluate_detections(all_boxes, output_dir)
 
 
 if __name__ == '__main__':
@@ -224,4 +235,4 @@ if __name__ == '__main__':
     net_x.cuda()
     net_x.eval()
     # evaluation
-    test_net_x(save_name, net_x, imdb_0, imdb_1, det_file, max_per_image, thresh=thresh, vis=vis)
+    test_net_x(net_x, imdb_0, imdb_1, max_per_image, thresh=thresh, vis=vis)
