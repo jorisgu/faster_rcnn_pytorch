@@ -31,9 +31,8 @@ pytorchpath = '/data02/jguerry/jg_pyt/'
 imdb_name_0 = 'inout_test_Images'
 imdb_name_1 = 'inout_test_Depth'
 
-save_name = 'inout_y_10000'
-trained_model_0 = pytorchpath+'models/inout_Images/faster_rcnn_10000.h5'
-trained_model_1 = pytorchpath+'models/inout_Depth/faster_rcnn_10000.h5'
+save_name = 'inout_y_100000'
+trained_model = pytorchpath+'models/inout_y/faster_rcnn_100000.h5'
 
 output_dir = pytorchpath+'output/faster_rcnn_inout_exp/'
 output_dir_detections = output_dir+imdb_name_0+'_'+imdb_name_1+'/detections_'+save_name+'/'
