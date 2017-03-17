@@ -38,7 +38,7 @@ pytorchpath = '/data02/jguerry/jg_pyt/'
 imdb_name = 'inout_seq1_Images'
 cfg_file = pytorchpath+'experiments/cfgs/faster_rcnn_end2end_inout.yml'
 pretrained_model = pytorchpath+'data/pretrained_model/VGG_imagenet.npy'
-output_dir = pytorchpath+'models/inout_seq0_Images/'
+output_dir = pytorchpath+'models/inout_seq1_Images/'
 
 start_step = 0
 end_step = 100000
