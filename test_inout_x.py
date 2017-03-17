@@ -55,7 +55,6 @@ mkdir_p(output_dir_detections)
 cfg_file = pytorchpath+'experiments/cfgs/faster_rcnn_end2end_inout.yml'
 rand_seed = 1024
 
-save_name = 'inout_x_10000'
 max_per_image = 300
 thresh = 0.05
 vis = True

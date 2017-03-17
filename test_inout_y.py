@@ -31,17 +31,18 @@ pytorchpath = '/data02/jguerry/jg_pyt/'
 imdb_name_0 = 'inout_test_Images'
 imdb_name_1 = 'inout_test_Depth'
 
-cfg_file = pytorchpath+'experiments/cfgs/faster_rcnn_end2end_inout.yml'
+save_name = 'inout_y_10000'
+trained_model_0 = pytorchpath+'models/inout_Images/faster_rcnn_10000.h5'
+trained_model_1 = pytorchpath+'models/inout_Depth/faster_rcnn_10000.h5'
 
-trained_model = pytorchpath+'models/inout_y/faster_rcnn_10000.h5'
+output_dir = pytorchpath+'output/faster_rcnn_inout_exp/'
+output_dir_detections = output_dir+imdb_name_0+'_'+imdb_name_1+'/detections_'+save_name+'/'
+det_file = output_dir+imdb_name_0+'_'+imdb_name_1+'/detections_'+save_name+'.pkl'
 
-output_dir_detections = pytorchpath+'output/faster_rcnn_inout_exp/inout_test_y/detections/'
 mkdir_p(output_dir_detections)
-det_file = pytorchpath+'output/faster_rcnn_inout_exp/inout_test_y/detections_10000.pkl'
 
 rand_seed = 1024
 
-save_name = 'inout_y_10000'
 max_per_image = 600
 thresh = 0.05
 vis = True
@@ -106,7 +107,7 @@ def im_detect(net_x, image_0, image_1):
     return scores_0, pred_boxes_0
 
 
-def test_net_y(name, net_x, imdb_0, imdb_1, det_file, max_per_image=300, thresh=0.05, vis=False):
+def test_net_y(net_x, imdb_0, imdb_1, max_per_image=300, thresh=0.05, vis=False):
     """Test a Fast R-CNN network on an image database."""
     num_images = len(imdb_0.image_index)
     # all detections are collected into:
@@ -193,4 +194,4 @@ if __name__ == '__main__':
     net.eval()
 
     # evaluation
-    test_net_y(save_name, net, imdb_0, imdb_1, det_file ,max_per_image, thresh=thresh, vis=vis)
+    test_net_y(net, imdb_0, imdb_1, max_per_image, thresh=thresh, vis=vis)
