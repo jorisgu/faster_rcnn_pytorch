@@ -27,9 +27,9 @@ def mkdir_p(path):
 pytorchpath = '/data02/jguerry/jg_pyt/'
 
 
-imdb_name = 'inout_test_Depth'
-save_name = 'inout_Depth_10000'
-trained_model = pytorchpath+'models/inout_Depth/faster_rcnn_10000.h5'
+imdb_name = 'inout_test_Images'
+save_name = 'inout_Images_10000'
+trained_model = pytorchpath+'models/inout_Images/faster_rcnn_10000.h5'
 
 
 
