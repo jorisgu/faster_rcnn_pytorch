@@ -116,8 +116,6 @@ def test_net_y(net_x, imdb_0, imdb_1, max_per_image=300, thresh=0.05, vis=False)
     all_boxes = [[[] for _ in xrange(num_images)]
                  for _ in xrange(imdb_0.num_classes)]
 
-    output_dir_0 = get_output_dir(imdb_0, name)
-    output_dir_1 = get_output_dir(imdb_1, name)
 
     # timers
     _t = {'im_detect': Timer(), 'misc': Timer()}
@@ -175,7 +173,7 @@ def test_net_y(net_x, imdb_0, imdb_1, max_per_image=300, thresh=0.05, vis=False)
         cPickle.dump(all_boxes, f, cPickle.HIGHEST_PROTOCOL)
 
     print 'Evaluating detections'
-    imdb_0.evaluate_detections(all_boxes, output_dir_0)
+    imdb_0.evaluate_detections(all_boxes, output_dir)
 
 
 if __name__ == '__main__':
