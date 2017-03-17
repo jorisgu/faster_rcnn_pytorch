@@ -34,10 +34,10 @@ def log_print(text, color=None, on_color=None, attrs=None):
 
 # hyper-parameters
 # ------------
-imdb_name = 'inout_train_Depth'
+imdb_name = 'inout_seq0_Images'
 cfg_file = 'experiments/cfgs/faster_rcnn_end2end_inout.yml'
 pretrained_model = 'data/pretrained_model/VGG_imagenet.npy'
-output_dir = 'models/inout_Depth/'
+output_dir = 'models/inout_seq0_Images/'
 
 start_step = 0
 end_step = 100000

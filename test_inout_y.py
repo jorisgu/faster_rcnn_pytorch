@@ -23,13 +23,13 @@ imdb_name_1 = 'inout_test_Depth'
 
 cfg_file = pytorchpath+'experiments/cfgs/faster_rcnn_end2end_inout.yml'
 
-trained_model = pytorchpath+'models/inout_y/faster_rcnn_100000.h5'
+trained_model = pytorchpath+'models/inout_y/faster_rcnn_10000.h5'
 
 output_dir_detections = pytorchpath+'output/faster_rcnn_inout_exp/inout_test_x/detections/'
 
 rand_seed = 1024
 
-save_name = 'inout_x_10000'
+save_name = 'inout_x_1000'
 max_per_image = 600
 thresh = 0.05
 vis = True
