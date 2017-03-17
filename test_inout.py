@@ -34,6 +34,7 @@ trained_model = pytorchpath+'models/inout_Depth/faster_rcnn_10000.h5'
 output_dir_detections = pytorchpath+'output/faster_rcnn_inout_exp/inout_test_Depth/detections/'
 mkdir_p(output_dir_detections)
 det_file = pytorchpath+'output/faster_rcnn_inout_exp/inout_test_Depth/detections_10000.pkl'
+save_name = 'inout_Depth_10000'
 rand_seed = 1024
 
 
