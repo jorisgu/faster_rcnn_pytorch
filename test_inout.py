@@ -25,16 +25,40 @@ def mkdir_p(path):
 # hyper-parameters
 # ------------
 pytorchpath = '/data02/jguerry/jg_pyt/'
+
+
 imdb_name = 'inout_test_Depth'
-cfg_file = pytorchpath+'experiments/cfgs/faster_rcnn_end2end_inout.yml'
+save_name = 'inout_Depth_10000'
+trained_model = pytorchpath+'models/inout_Depth/faster_rcnn_10000.h5'
+
+
+
+
 # trained_model = '/media/longc/Data/models/VGGnet_fast_rcnn_iter_70000.h5'
 # trained_model = 'models/saved_model3/faster_rcnn_90000.h5'
 
-trained_model = pytorchpath+'models/inout_Depth/faster_rcnn_10000.h5'
-output_dir_detections = pytorchpath+'output/faster_rcnn_inout_exp/inout_test_Depth/detections/'
+
+
+
+output_dir = pytorchpath+'output/faster_rcnn_inout_exp/'
+output_dir_detections = output_dir+imdb_name+'/detections'
+det_file = output_dir+imdb_name+'/detections_'+save_name+'.pkl'
+
 mkdir_p(output_dir_detections)
-det_file = pytorchpath+'output/faster_rcnn_inout_exp/inout_test_Depth/detections_10000.pkl'
-save_name = 'inout_Depth_10000'
+
+
+
+
+
+
+
+
+
+
+
+
+
+cfg_file = pytorchpath+'experiments/cfgs/faster_rcnn_end2end_inout.yml'
 rand_seed = 1024
 
 
@@ -96,7 +120,7 @@ def im_detect(net, image):
     return scores, pred_boxes
 
 
-def test_net(name, net, imdb, det_file, max_per_image=300, thresh=0.05, vis=False):
+def test_net(net, imdb, max_per_image=300, thresh=0.05, vis=False):
     """Test a Fast R-CNN network on an image database."""
     num_images = len(imdb.image_index)
     # all detections are collected into:
@@ -105,7 +129,7 @@ def test_net(name, net, imdb, det_file, max_per_image=300, thresh=0.05, vis=Fals
     all_boxes = [[[] for _ in xrange(num_images)]
                  for _ in xrange(imdb.num_classes)]
 
-    output_dir = get_output_dir(imdb, name)
+    # output_dir = get_output_dir(imdb, name)
 
     # timers
     _t = {'im_detect': Timer(), 'misc': Timer()}
@@ -177,4 +201,4 @@ if __name__ == '__main__':
     net.eval()
 
     # evaluation
-    test_net(save_name, net, imdb, det_file, max_per_image, thresh=thresh, vis=vis)
+    test_net(net, imdb, max_per_image, thresh=thresh, vis=vis)
