@@ -35,7 +35,7 @@ def log_print(text, color=None, on_color=None, attrs=None):
 # hyper-parameters
 # ------------
 pytorchpath = '/data02/jguerry/jg_pyt/'
-imdb_name = 'inout_seq0_Images'
+imdb_name = 'inout_seq1_Images'
 cfg_file = pytorchpath+'experiments/cfgs/faster_rcnn_end2end_inout.yml'
 pretrained_model = pytorchpath+'data/pretrained_model/VGG_imagenet.npy'
 output_dir = pytorchpath+'models/inout_seq0_Images/'
