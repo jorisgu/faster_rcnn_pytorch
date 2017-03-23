@@ -53,7 +53,7 @@ for split in ['train', 'test']:
         __sets[name] = (lambda split=split, encoding=encoding: sunrgbd(split,encoding))
 
 # # InOut dataset
-for split in ['train', 'test', 'seq0', 'seq1', 'seq2', 'seq3']:
+for split in ['train', 'test', 'seq0', 'seq1', 'seq2', 'seq3', 'seq01', 'seq02', 'seq12']:
     for encoding in ['Images', 'Depth', 'Cube', 'Jet', 'HHA']:
         name = 'inout_{}_{}'.format(split,encoding)
         __sets[name] = (lambda split=split, encoding=encoding: inout(split,encoding))
