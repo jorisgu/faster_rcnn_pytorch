@@ -34,10 +34,10 @@ def log_print(text, color=None, on_color=None, attrs=None):
 
 # hyper-parameters
 # ------------
-pytorchpath = '/data02/jguerry/jg_pyt/'
+pytorchpath = '/home/jguerry/workspace/jg_dl/jg_pyt/'
 
 
-imdb_name = 'inout_seq01_Cube'
+imdb_name = 'inout_jg_train_Images'
 output_dir = pytorchpath+'models/'+imdb_name+'/'
 
 cfg_file = pytorchpath+'experiments/cfgs/faster_rcnn_end2end_inout.yml'
