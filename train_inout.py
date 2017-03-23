@@ -37,13 +37,13 @@ def log_print(text, color=None, on_color=None, attrs=None):
 pytorchpath = '/data02/jguerry/jg_pyt/'
 
 
-imdb_name = 'inout_seq3_Images'
-output_dir = pytorchpath+'models/inout_seq3_Images/'
+imdb_name = 'inout_seq01_Cube'
+output_dir = pytorchpath+'models/'+imdb_name+'/'
 
 cfg_file = pytorchpath+'experiments/cfgs/faster_rcnn_end2end_inout.yml'
 pretrained_model = pytorchpath+'data/pretrained_model/VGG_imagenet.npy'
 start_step = 0
-end_step = 100000
+end_step = 10000
 lr_decay_steps = {60000, 80000}
 lr_decay = 1./10
 
