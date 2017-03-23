@@ -249,6 +249,7 @@ class FasterRCNN(nn.Module):
             self.fg_cnt = fg_cnt
             self.bg_cnt = bg_cnt
 
+
         ce_weights = torch.ones(cls_score.size()[1])
         ce_weights[0] = float(fg_cnt) / bg_cnt
         ce_weights = ce_weights.cuda()
