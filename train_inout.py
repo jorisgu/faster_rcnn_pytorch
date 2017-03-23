@@ -35,11 +35,13 @@ def log_print(text, color=None, on_color=None, attrs=None):
 # hyper-parameters
 # ------------
 pytorchpath = '/data02/jguerry/jg_pyt/'
-imdb_name = 'inout_seq3_Depth'
+
+
+imdb_name = 'inout_seq3_Images'
+output_dir = pytorchpath+'models/inout_seq3_Images/'
+
 cfg_file = pytorchpath+'experiments/cfgs/faster_rcnn_end2end_inout.yml'
 pretrained_model = pytorchpath+'data/pretrained_model/VGG_imagenet.npy'
-output_dir = pytorchpath+'models/inout_seq3_Depth/'
-
 start_step = 0
 end_step = 100000
 lr_decay_steps = {60000, 80000}
