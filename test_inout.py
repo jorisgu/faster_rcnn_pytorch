@@ -25,11 +25,11 @@ def mkdir_p(path):
 # hyper-parameters
 # ------------
 pytorchpath = '/data02/jguerry/jg_pyt/'
+# pytorchpath = '/home/jguerry/workspace/jg_dl/jg_pyt/'
 
-
-imdb_name = 'inout_seq1_Depth'
-save_name = 'inout_seq2_on_seq1_Depth_10000'
-trained_model = pytorchpath+'models/inout_seq2_Depth/faster_rcnn_10000.h5'
+imdb_name = 'inout_jg_test_Depth'
+save_name = 'inout_jg_train_Depth_on_inout_jg_test_Depth_10000'
+trained_model = pytorchpath+'models/inout_jg_train_Images/faster_rcnn_10000.h5'
 
 
 

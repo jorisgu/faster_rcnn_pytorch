@@ -182,12 +182,14 @@ class FasterRCNN(nn.Module):
     SCALES = (600,)
     MAX_SIZE = 1000
 
-    def __init__(self, classes=None, debug=False):
+    def __init__(self, classes=None, debug=False, classes_weights=None):
         super(FasterRCNN, self).__init__()
 
         if classes is not None:
             self.classes = classes
             self.n_classes = len(classes)
+
+        self.classes_weights = classes_weights
 
         self.rpn = RPN()
         self.roi_pool = RoIPool(7, 7, 1.0/16)
@@ -251,8 +253,12 @@ class FasterRCNN(nn.Module):
 
 
         ce_weights = torch.ones(cls_score.size()[1])
+        if self.classes_weights is not None:
+            ce_weights = torch.from_numpy(self.classes_weights)
+
         ce_weights[0] = float(fg_cnt) / bg_cnt
         ce_weights = ce_weights.cuda()
+        # print ce_weights
         cross_entropy = F.cross_entropy(cls_score, label, weight=ce_weights)
 
         # bounding box regression L1 loss

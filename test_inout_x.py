@@ -24,19 +24,36 @@ def mkdir_p(path):
             raise
 
 # hyper-parameters
-# ------------
-pytorchpath = '/data02/jguerry/jg_pyt/'
+# ------------zz
+pytorchpath = os.environ['PWD']+'/'
+
+
+# split = ['train', 'test', 'seq0', 'seq1', 'seq2', 'seq3', 'seq01', 'seq02', 'seq12', 'jg_train', 'jg_test']
+# encodings = ['Images', 'Depth', 'Cube', 'Jet', 'HHA']
+
+
+split_train = 'jg_train'
+split_test = 'jg_test'
+
+encoding_0 = 'Images'
+encoding_1 = 'Jet'
+
+
+imdb_train_name_0 = 'inout_'+split_train+'_'+encoding_0
+imdb_train_name_1 = 'inout_'+split_train+'_'+encoding_1
+imdb_test_name_0 = 'inout_'+split_test+'_'+encoding_0
+imdb_test_name_1 = 'inout_'+split_test+'_'+encoding_1
 
 imdb_name_0 = 'inout_seq1_Images'
 imdb_name_1 = 'inout_seq1_Depth'
 
-save_name = 'inout_x_seq2_on_seq1_10000'
-trained_model_0 = pytorchpath+'models/inout_seq2_Images/faster_rcnn_10000.h5'
-trained_model_1 = pytorchpath+'models/inout_seq2_Depth/faster_rcnn_10000.h5'
+save_name = 'inout_x_'+split_train+'_on_'+split_test+'_'+encoding_0+'-'+encoding_1+'_10000'
+trained_model_0 = pytorchpath+'models/'+imdb_train_name_0+'/faster_rcnn_10000.h5'
+trained_model_1 = pytorchpath+'models/'+imdb_train_name_1+'/faster_rcnn_10000.h5'
 
 output_dir = pytorchpath+'output/faster_rcnn_inout_exp/'
-output_dir_detections = output_dir+imdb_name_0+'_'+imdb_name_1+'/detections_'+save_name+'/'
-det_file = output_dir+imdb_name_0+'_'+imdb_name_1+'/detections_'+save_name+'.pkl'
+output_dir_detections = output_dir+save_name+'/detections/'
+det_file = output_dir+save_name+'/detections'+save_name+'.pkl'
 
 mkdir_p(output_dir_detections)
 

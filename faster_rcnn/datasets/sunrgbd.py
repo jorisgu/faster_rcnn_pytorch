@@ -38,8 +38,8 @@ class sunrgbd(imdb):
         self._data_path = os.path.join(self._devkit_path,'data')
         self.encoding = encoding
         self._classes = ('__background__', # always index 0
-                         'wall',
-                        'floor',
+                         #'wall',
+                        #'floor',
                         'cabinet',
                         'bed',
                         'chair',
@@ -57,9 +57,9 @@ class sunrgbd(imdb):
                         'dresser',
                         'pillow',
                         'mirror',
-                        'floor_mat',
-                        'clothes',
-                        'ceiling',
+                        #'floor_mat',
+                        #'clothes',
+                        #'ceiling',
                         'books',
                         'fridge',
                         'tv',
@@ -75,12 +75,20 @@ class sunrgbd(imdb):
                         'lamp',
                         'bathtub',
                         'bag')
+
+
+        self.classes_weights = np.asarray([-1, 1.421, 1.846, 1.009, 1.477,
+        1.082, 1.619, 39.25, 2.816, 1.725, 1.607, 4.898, 1.234, 613.0, 6.514, 1.688, 1.143,
+         3.86, 1.916, 7.955, 4.579, 2.0, 5.857, 103.0, 1.802, 1.52,
+         1.531, 2.471, 7.182, 3.409, 1.276, 10.415, 5.744], dtype=np.float32)
+
+
         self._class_to_ind = dict(zip(self.classes, xrange(self.num_classes)))
         self._image_ext = '.png'
         self._image_index = self._load_image_set_index()
         # self._remove_empty_samples()
         # Default to roidb handler
-        #self._roidb_handler = self.selective_search_roidb
+        # self._roidb_handler = self.selective_search_roidb
         self._roidb_handler = self.gt_roidb
         self._salt = str(uuid.uuid4())
         self._comp_id = 'comp4'

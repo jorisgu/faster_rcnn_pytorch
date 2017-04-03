@@ -30,15 +30,15 @@ def log_print(text, color=None, on_color=None, attrs=None):
     else:
         print(text)
 
-
+pytorchpath = os.environ['PWD']+'/'
 
 # hyper-parameters
 # ------------
 imdb_name = 'sunrgbd_train_rgb_i_100_8bits'
-cfg_file = 'experiments/cfgs/faster_rcnn_end2end_sunrgbd.yml'
-pretrained_model = 'data/pretrained_model/VGG_imagenet.npy'
-output_dir = 'models/sunrgbd_rgb100/'
+output_dir = pytorchpath+'models/'+imdb_name+'/'
 
+cfg_file = pytorchpath+'experiments/cfgs/faster_rcnn_end2end_sunrgbd.yml'
+pretrained_model = pytorchpath+'data/pretrained_model/VGG_imagenet.npy'
 start_step = 0
 end_step = 100000
 lr_decay_steps = {60000, 80000}
@@ -70,7 +70,7 @@ roidb = imdb.roidb
 data_layer = RoIDataLayer(roidb, imdb.num_classes)
 
 # load net
-net = FasterRCNN(classes=imdb.classes, debug=_DEBUG)
+net = FasterRCNN(classes=imdb.classes, debug=_DEBUG, classes_weights=imdb.classes_weights)
 network.weights_normal_init(net, dev=0.01)
 network.load_pretrained_npy(net, pretrained_model)
 # model_file = '/media/longc/Data/models/VGGnet_fast_rcnn_iter_70000.h5'

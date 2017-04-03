@@ -48,7 +48,7 @@ for year in ['2007', '2012', '0712']:
 
 # # SUNRGBD dataset
 for split in ['train', 'test']:
-    for encoding in ['rgb_i_100_8bits', 'd_raw_HHA_8bits']:
+    for encoding in ['rgb_i_100_8bits', 'd_raw_HHA_8bits','d_raw_normal_16bits','d_raw_normal_8bits']:
         name = 'sunrgbd_{}_{}'.format(split,encoding)
         __sets[name] = (lambda split=split, encoding=encoding: sunrgbd(split,encoding))
 
