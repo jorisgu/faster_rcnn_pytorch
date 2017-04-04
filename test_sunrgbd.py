@@ -3,6 +3,7 @@ import torch
 import cv2
 import cPickle
 import numpy as np
+import errno
 
 from faster_rcnn import network
 from faster_rcnn.faster_rcnn import FasterRCNN, RPN
@@ -13,21 +14,59 @@ from faster_rcnn.fast_rcnn.bbox_transform import bbox_transform_inv, clip_boxes
 from faster_rcnn.datasets.factory import get_imdb
 from faster_rcnn.fast_rcnn.config import cfg, cfg_from_file, get_output_dir
 
-
+def mkdir_p(path):
+    try:
+        os.makedirs(path)
+    except OSError as exc:  # Python >2.5
+        if exc.errno == errno.EEXIST and os.path.isdir(path):
+            pass
+        else:
+            raise
 # hyper-parameters
 # ------------
+# pytorchpath = '/data02/jguerry/jg_pyt/'
+pytorchpath = '/home/jguerry/workspace/jg_dl/jg_pyt/'
+
 imdb_name = 'sunrgbd_test_rgb_i_100_8bits'
-cfg_file = 'experiments/cfgs/faster_rcnn_end2end_sunrgbd.yml'
+imdb_model = 'sunrgbd_train_rgb_i_100_8bits'
+save_name = imdb_model+'_on_'+imdb_name
+trained_model = pytorchpath+'models/'+imdb_model+'/faster_rcnn_100000.h5'
+
+
+
+
 # trained_model = '/media/longc/Data/models/VGGnet_fast_rcnn_iter_70000.h5'
 # trained_model = 'models/saved_model3/faster_rcnn_90000.h5'
-trained_model = '/home/jguerry/workspace/jg_dl/faster_rcnn_pytorch/models/sunrgbd_rgb100/faster_rcnn_70000.h5'
 
+
+
+
+output_dir = pytorchpath+'output/faster_rcnn_sunrgbd_exp/'
+output_dir_detections = output_dir+imdb_name+'/detections_'+save_name+'/'
+det_file = output_dir+imdb_name+'/detections_'+save_name+'.pkl'
+
+mkdir_p(output_dir_detections)
+
+
+
+
+
+
+
+
+
+
+
+
+
+cfg_file = pytorchpath+'experiments/cfgs/faster_rcnn_end2end_sunrgbd.yml'
 rand_seed = 1024
 
-save_name = 'sunrgbd_rgb100_70000'
+
 max_per_image = 300
 thresh = 0.05
-vis = False
+vis = True
+sav = True
 
 # ------------
 
@@ -82,7 +121,7 @@ def im_detect(net, image):
     return scores, pred_boxes
 
 
-def test_net(name, net, imdb, max_per_image=300, thresh=0.05, vis=False):
+def test_net(net, imdb, max_per_image=300, thresh=0.05, vis=False):
     """Test a Fast R-CNN network on an image database."""
     num_images = len(imdb.image_index)
     # all detections are collected into:
@@ -91,11 +130,11 @@ def test_net(name, net, imdb, max_per_image=300, thresh=0.05, vis=False):
     all_boxes = [[[] for _ in xrange(num_images)]
                  for _ in xrange(imdb.num_classes)]
 
-    output_dir = get_output_dir(imdb, name)
+    # output_dir = get_output_dir(imdb, name)
 
     # timers
     _t = {'im_detect': Timer(), 'misc': Timer()}
-    det_file = os.path.join(output_dir, 'detections.pkl')
+    # det_file = os.path.join(output_dir, 'detections.pkl')
 
     for i in range(num_images):
 
@@ -105,7 +144,7 @@ def test_net(name, net, imdb, max_per_image=300, thresh=0.05, vis=False):
         detect_time = _t['im_detect'].toc(average=False)
 
         _t['misc'].tic()
-        if vis:
+        if vis or sav:
             # im2show = np.copy(im[:, :, (2, 1, 0)])
             im2show = np.copy(im)
 
@@ -136,9 +175,11 @@ def test_net(name, net, imdb, max_per_image=300, thresh=0.05, vis=False):
         print 'im_detect: {:d}/{:d} {:.3f}s {:.3f}s' \
             .format(i + 1, num_images, detect_time, nms_time)
 
-        if vis:
-            cv2.imshow('test', im2show)
-            cv2.waitKey(1)
+        # if vis:
+        #     cv2.imshow('test', im2show)
+        #     cv2.waitKey(1)
+        if sav:
+            cv2.imwrite(output_dir_detections+str(i)+'.png', im2show)
 
     with open(det_file, 'wb') as f:
         cPickle.dump(all_boxes, f, cPickle.HIGHEST_PROTOCOL)
@@ -161,4 +202,4 @@ if __name__ == '__main__':
     net.eval()
 
     # evaluation
-    test_net(save_name, net, imdb, max_per_image, thresh=thresh, vis=vis)
+    test_net(net, imdb, max_per_image, thresh=thresh, vis=vis)

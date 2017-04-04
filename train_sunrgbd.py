@@ -35,7 +35,7 @@ pytorchpath = os.environ['PWD']+'/'
 # hyper-parameters
 # ------------
 imdb_name = 'sunrgbd_train_rgb_i_100_8bits'
-output_dir = pytorchpath+'models/'+imdb_name+'/'
+output_dir = pytorchpath+'models/'+imdb_name+'_noChair/'
 
 cfg_file = pytorchpath+'experiments/cfgs/faster_rcnn_end2end_sunrgbd.yml'
 pretrained_model = pytorchpath+'data/pretrained_model/VGG_imagenet.npy'
