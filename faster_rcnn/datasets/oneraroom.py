@@ -18,6 +18,7 @@ import glob
 import uuid
 import scipy.io as sio
 import xml.etree.ElementTree as ET
+import errno
 
 from .imdb import imdb
 from .imdb import ROOT_DIR
@@ -28,67 +29,35 @@ from .voc_eval import voc_eval
 # >>>> obsolete, because it depends on sth outside of this project
 from ..fast_rcnn.config import cfg
 # <<<< obsolete
+def mkdir_p(path):
+    try:
+        os.makedirs(path)
+    except OSError as exc:  # Python >2.5
+        if exc.errno == errno.EEXIST and os.path.isdir(path):
+            pass
+        else:
+            raise
 
-
-class sunrgbd(imdb):
+class oneraroom(imdb):
     def __init__(self, image_set, encoding, devkit_path=None):
-        imdb.__init__(self, 'sunrgbd_' + image_set+'_'+encoding)
+        imdb.__init__(self, 'oneraroom_' + image_set+'_'+encoding)
         self._image_set = image_set
         self._devkit_path = self._get_default_path() if devkit_path is None else devkit_path
-        self._data_path = os.path.join(self._devkit_path,'data')
+        self._data_path = os.path.join(self._devkit_path,'data_pv')
         self.encoding = encoding
         self._classes = ('__background__', # always index 0
-                         #'wall',
-                        #'floor',
-                        'cabinet',
-                        'bed',
-                        #'chair',
-                        'sofa',
-                        'table',
-                        'door',
-                        'window',
-                        'bookshelf',
-                        'picture',
-                        'counter',
-                        'blinds',
-                        'desk',
-                        'shelves',
-                        'curtain',
-                        'dresser',
-                        'pillow',
-                        'mirror',
-                        #'floor_mat',
-                        #'clothes',
-                        #'ceiling',
-                        'books',
-                        'fridge',
-                        'tv',
-                        'paper',
-                        'towel',
-                        'shower_curtain',
-                        'box',
-                        'whiteboard',
-                        'person',
-                        'night_stand',
-                        'toilet',
-                        'sink',
-                        'lamp',
-                        'bathtub',
-                        'bag',)
-
-        # 1 + freqMed/freq
-        self.classes_weights = np.asarray([-1, 1.421, 1.846,#1.009,
-        1.477, 1.082, 1.619, 39.25, 2.816, 1.725, 1.607, 4.898, 1.234, 613.0, 6.514, 1.688, 1.143,
-         3.86, 1.916, 7.955, 4.579, 2.0, 5.857, 103.0, 1.802, 1.52,
-         1.531, 2.471, 7.182, 3.409, 1.276, 10.415, 5.744], dtype=np.float32)
-
-
+                         'person',)
         self._class_to_ind = dict(zip(self.classes, xrange(self.num_classes)))
-        self._image_ext = '.png'
+
+        if self.encoding=='rgb':
+            self._image_ext = '.jpg'
+        else:
+            self._image_ext = '.png'
+
         self._image_index = self._load_image_set_index()
         self._remove_empty_samples()
         # Default to roidb handler
-        # self._roidb_handler = self.selective_search_roidb
+        #self._roidb_handler = self.selective_search_roidb
         self._roidb_handler = self.gt_roidb
         self._salt = str(uuid.uuid4())
         self._comp_id = 'comp4'
@@ -96,12 +65,12 @@ class sunrgbd(imdb):
         # PASCAL specific config options
         self.config = {'cleanup'     : True,
                        'use_salt'    : True,
-                       'use_diff'    : False, # using difficult samples
+                       'use_diff'    : True, # using difficult samples
                        'matlab_eval' : False,
                        'rpn_file'    : None,
                        'min_size'    : 2}
 
-        assert os.path.exists(self._devkit_path), 'SUNRGBD path does not exist: {}'.format(self._devkit_path)
+        assert os.path.exists(self._devkit_path), 'oneraroom path does not exist: {}'.format(self._devkit_path)
         assert os.path.exists(self._data_path), 'Path does not exist: {}'.format(self._data_path)
 
     def image_path_at(self, i):
@@ -125,7 +94,7 @@ class sunrgbd(imdb):
         Load the indexes listed in this dataset's image set file.
         """
         # Example path to image set file:
-        image_set_file = os.path.join(self._data_path, 'sets', 'sunrgbd', self._image_set + '.txt')
+        image_set_file = os.path.join(self._data_path, 'sets', self._image_set + '.txt')
         assert os.path.exists(image_set_file), 'Path does not exist: {}'.format(image_set_file)
         with open(image_set_file) as f:
             image_index = [x.strip() for x in f.readlines()]
@@ -133,7 +102,7 @@ class sunrgbd(imdb):
 
     def _get_default_path(self):
         """
-        Return the default path where SUNRGBD is expected to be installed.
+        Return the default path where oneraroom is expected to be installed.
         """
         # return os.path.join(cfg.DATA_DIR, 'KITTIVOC')
         return os.path.join(cfg.DATA_DIR,'')
@@ -144,7 +113,9 @@ class sunrgbd(imdb):
 
         This function loads/saves from/to a cache file to speed up future calls.
         """
-        cache_file = os.path.join(self._devkit_path, 'faster_rcnn', 'cache',self.name + '_gt_roidb.pkl')
+        cache_folder = os.path.join(self._devkit_path, 'faster_rcnn', 'cache')
+        mkdir_p(cache_folder)
+        cache_file = os.path.join(cache_folder, self.name + '_gt_roidb.pkl')
         # cache_file = os.path.join(self.cache_path, self.name + '_gt_roidb.pkl')
         if os.path.exists(cache_file):
             with open(cache_file, 'rb') as fid:
@@ -248,7 +219,7 @@ class sunrgbd(imdb):
         nb_removed = 0
         for i in range(len(self._image_index)-1, -1, -1):
             index = self._image_index[i]
-            filename = os.path.join(self._data_path, 'Annotations_37', index + '.xml')
+            filename = os.path.join(self._data_path, 'annotations', index + '.xml')
             tree = ET.parse(filename)
             objs = tree.findall('object')
             non_diff_objs = [obj for obj in objs if int(obj.find('difficult').text) == 0 and obj.find('name').text.lower().strip() != 'dontcare']
@@ -264,7 +235,7 @@ class sunrgbd(imdb):
         Load image and bounding boxes info from XML file in the PASCAL VOC
         format.
         """
-        filename = os.path.join(self._data_path, 'Annotations_37', index + '.xml')
+        filename = os.path.join(self._data_path, 'annotations', index + '.xml')
         tree = ET.parse(filename)
         objs = tree.findall('object')
         # if not self.config['use_diff']:
@@ -299,9 +270,11 @@ class sunrgbd(imdb):
             ishards[ix] = difficult
 
             class_name = obj.find('name').text.lower().strip()
+            if class_name not in self._classes:
+                continue
             if class_name != 'dontcare':
                 care_inds = np.append(care_inds, np.asarray([ix], dtype=np.int32))
-            if class_name == 'dontcare' or class_name not in self._classes:
+            if class_name == 'dontcare':
                 dontcare_inds = np.append(dontcare_inds, np.asarray([ix], dtype=np.int32))
                 boxes[ix, :] = [x1, y1, x2, y2]
                 continue
@@ -364,10 +337,10 @@ class sunrgbd(imdb):
     def _do_python_eval(self, output_dir = 'output'):
         annopath = os.path.join(
             self._data_path,
-            'Annotations_37', '{:s}.xml')
+            'annotations', '{:s}.xml')
         imagesetfile = os.path.join(
             self._data_path,
-            'sets', 'sunrgbd',
+            'sets',
             self._image_set + '.txt')
         cachedir = os.path.join(self._devkit_path, 'faster_rcnn', 'annotations_cache')
         aps = []
@@ -437,6 +410,6 @@ class sunrgbd(imdb):
             self.config['cleanup'] = True
 
 if __name__ == '__main__':
-    d = sunrgbd('train')
+    d = oneraroom('train')
     res = d.roidb
     from IPython import embed; embed()

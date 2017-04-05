@@ -16,6 +16,7 @@ from .imagenet3d import imagenet3d
 from .kitti import kitti
 from .sunrgbd import sunrgbd
 from .inout import inout
+from .oneraroom import oneraroom
 from .kitti_tracking import kitti_tracking
 from .nthu import nthu
 from .coco import coco
@@ -58,6 +59,11 @@ for split in ['train', 'test', 'seq0', 'seq1', 'seq2', 'seq3', 'seq01', 'seq02',
         name = 'inout_{}_{}'.format(split,encoding)
         __sets[name] = (lambda split=split, encoding=encoding: inout(split,encoding))
 
+# # oneraroom dataset
+for split in ['all']:
+    for encoding in ['rgb', 'depth_8bits']:
+        name = 'oneraroom_{}_{}'.format(split,encoding)
+        __sets[name] = (lambda split=split, encoding=encoding: oneraroom(split,encoding))
 
 # # KITTI dataset
 for split in ['train', 'val', 'trainval', 'test']:
