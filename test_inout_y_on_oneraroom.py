@@ -1,3 +1,5 @@
+
+
 import os
 import torch
 import cv2
@@ -6,7 +8,7 @@ import numpy as np
 import errno
 
 from faster_rcnn import network
-from faster_rcnn.faster_rcnn_x import FasterRCNN, FasterRCNN_x
+from faster_rcnn.faster_rcnn_y import FasterRCNN_y
 from faster_rcnn.utils.timer import Timer
 from faster_rcnn.fast_rcnn.nms_wrapper import nms
 
@@ -22,54 +24,26 @@ def mkdir_p(path):
             pass
         else:
             raise
-
 # hyper-parameters
-# ------------zz
+# ------------
 pytorchpath = os.environ['PWD']+'/'
 
+imdb_name_0 = 'oneraroom_easy_rgb'
+imdb_name_1 = 'oneraroom_easy_depth_8bits'
 
-# split = ['train', 'test', 'seq0', 'seq1', 'seq2', 'seq3', 'seq01', 'seq02', 'seq12', 'jg_train', 'jg_test']
-# encodings = ['Images', 'Depth', 'Cube', 'Jet', 'HHA']
-
-
-split_train = 'jg_train'
-split_test = 'jg_test'
-
-encoding_0 = 'Images'
-encoding_1 = 'Jet'
-
-
-imdb_train_name_0 = 'inout_jg_train_Images'
-imdb_train_name_1 = 'inout_jg_train_Depth'
-imdb_test_name_0 = 'oneraroom_easy_rgb'
-imdb_test_name_1 = 'oneraroom_easy_depth_8bits'
-
-save_name = 'inout_x_on_oneraroom_easy_rgbd_10000_blackout'
-trained_model_0 = pytorchpath+'models/'+imdb_train_name_0+'/faster_rcnn_10000.h5'
-trained_model_1 = pytorchpath+'models/'+imdb_train_name_1+'/faster_rcnn_10000.h5'
+save_name = 'inout_y_on_oneraroom_easy_rgbd_100000_blackout'
+trained_model = pytorchpath+'models/inout_y/faster_rcnn_100000.h5'
 
 output_dir = pytorchpath+'output/faster_rcnn_oneraroom_exp/'
 output_dir_detections = output_dir+save_name+'/detections/'
-det_file = output_dir+save_name+'/detections'+save_name+'.pkl'
+det_file = output_dir+save_name+'/detections/'+save_name+'.pkl'
 
 mkdir_p(output_dir_detections)
-
-
-
-
-
-
-
-
-
-
-
-
 
 cfg_file = pytorchpath+'experiments/cfgs/faster_rcnn_end2end_oneraroom.yml'
 rand_seed = 1024
 
-max_per_image = 300
+max_per_image = 600
 thresh = 0.05
 vis = True
 sav = True
@@ -106,18 +80,17 @@ def im_detect(net_x, image_0, image_1):
         boxes (ndarray): R x (4*K) array of predicted bounding boxes
     """
 
-    im_data_0, im_scales_0 = net_x.frcnn_0.get_image_blob(image_0)
-    # im_data_0=0*im_data_0
-    im_data_1, im_scales_1 = net_x.frcnn_1.get_image_blob(image_1)
+    im_data_0, im_scales_0 = net_x.get_image_blob(image_0)
+    im_data_0=0*im_data_0
+    im_data_1, im_scales_1 = net_x.get_image_blob(image_1)
 
     im_info = np.array(
         [[im_data_0.shape[1], im_data_0.shape[2], im_scales_0[0]]],
         dtype=np.float32)
 
 
-    cls_prob_0, bbox_pred_0, cls_prob_1, bbox_pred_1, rois = net_x(im_data_0, im_data_1, im_info)
+    cls_prob_0, bbox_pred_0, rois = net_x(im_data_0, im_data_1, im_info)
     scores_0 = cls_prob_0.data.cpu().numpy()
-    scores_1 = cls_prob_1.data.cpu().numpy()
     boxes = rois.data.cpu().numpy()[:, 1:5] / im_info[0][2]
 
     if cfg.TEST.BBOX_REG:
@@ -126,18 +99,16 @@ def im_detect(net_x, image_0, image_1):
         pred_boxes_0 = bbox_transform_inv(boxes, box_deltas_0)
         pred_boxes_0 = clip_boxes(pred_boxes_0, image_0.shape)
 
-        box_deltas_1 = bbox_pred_1.data.cpu().numpy()
-        pred_boxes_1 = bbox_transform_inv(boxes, box_deltas_1)
-        pred_boxes_1 = clip_boxes(pred_boxes_1, image_1.shape)
+
     else:
         print "bbox reg compulsory"
         exit(1)
 
 
-    return scores_0, scores_1, pred_boxes_0, pred_boxes_1
+    return scores_0, pred_boxes_0
 
 
-def test_net_x(net_x, imdb_0, imdb_1, max_per_image=300, thresh=0.05, vis=False):
+def test_net_y(net_x, imdb_0, imdb_1, max_per_image=300, thresh=0.05, vis=False):
     """Test a Fast R-CNN network on an image database."""
     num_images = len(imdb_0.image_index)
     # all detections are collected into:
@@ -149,7 +120,8 @@ def test_net_x(net_x, imdb_0, imdb_1, max_per_image=300, thresh=0.05, vis=False)
 
     # timers
     _t = {'im_detect': Timer(), 'misc': Timer()}
-
+    # det_file_0 = os.path.join(output_dir_0, 'detections.pkl')
+    # det_file_1 = os.path.join(output_dir_1, 'detections.pkl')
 
     for i in range(num_images):
 
@@ -157,7 +129,7 @@ def test_net_x(net_x, imdb_0, imdb_1, max_per_image=300, thresh=0.05, vis=False)
         im_1 = cv2.imread(imdb_1.image_path_at(i))
 
         _t['im_detect'].tic()
-        scores_0, scores_1, boxes_0, boxes_1 = im_detect(net_x, im_0, im_1)
+        scores, boxes = im_detect(net_x, im_0, im_1)
         detect_time = _t['im_detect'].toc(average=False)
 
         _t['misc'].tic()
@@ -166,37 +138,18 @@ def test_net_x(net_x, imdb_0, imdb_1, max_per_image=300, thresh=0.05, vis=False)
             im2show = np.copy(im_0)
 
         # skip j = 0, because it's the background class
+
         for j in xrange(1, imdb_0.num_classes):
-
-            inds_0 = np.where(scores_0[:, j] > thresh)[0]
-            inds_1 = np.where(scores_1[:, j] > thresh)[0]
-            # print inds_0.shape
-            # print inds_1.shape
-
-            cls_scores_0 = scores_0[inds_0, j]
-            cls_scores_1 = scores_1[inds_1, j]
-            cls_scores_x = np.hstack((cls_scores_0,cls_scores_1))
-
-            # print cls_scores_0.shape
-            # print cls_scores_1.shape
-            # print cls_scores_x.shape
-
-            cls_boxes_0 = boxes_0[inds_0, j * 4:(j + 1) * 4]
-            cls_boxes_1 = boxes_1[inds_1, j * 4:(j + 1) * 4]
-            cls_boxes_x = np.vstack((cls_boxes_0,cls_boxes_1))
-
-            # print cls_boxes_0.shape
-            # print cls_boxes_1.shape
-            # print cls_boxes_x.shape
-
-            # cls_dets_0 = np.hstack((cls_boxes_, cls_scores_0[:, np.newaxis])).astype(np.float32, copy=False)
-            cls_dets_x = np.hstack((cls_boxes_x, cls_scores_x[:, np.newaxis])).astype(np.float32, copy=False)
-
-            keep = nms(cls_dets_x, cfg.TEST.NMS)
-            cls_dets_x = cls_dets_x[keep, :]
+            inds = np.where(scores[:, j] > thresh)[0]
+            cls_scores = scores[inds, j]
+            cls_boxes = boxes[inds, j * 4:(j + 1) * 4]
+            cls_dets = np.hstack((cls_boxes, cls_scores[:, np.newaxis])) \
+                .astype(np.float32, copy=False)
+            keep = nms(cls_dets, cfg.TEST.NMS)
+            cls_dets = cls_dets[keep, :]
             if vis:
-                im2show = vis_detections(im2show, imdb_0.classes[j], cls_dets_x)
-            all_boxes[j][i] = cls_dets_x
+                im2show = vis_detections(im2show, imdb_0.classes[j], cls_dets)
+            all_boxes[j][i] = cls_dets
 
         # Limit to max_per_image detections *over all classes*
         if max_per_image > 0:
@@ -226,27 +179,18 @@ def test_net_x(net_x, imdb_0, imdb_1, max_per_image=300, thresh=0.05, vis=False)
 
 if __name__ == '__main__':
 
-    imdb_0 = get_imdb(imdb_test_name_0)
+    imdb_0 = get_imdb(imdb_name_0)
     imdb_0.competition_mode(on=True)
-    net_0 = FasterRCNN(classes=imdb_0.classes, debug=False)
-    network.load_net(trained_model_0, net_0)
-    print('load model 0 successfully!')
-    net_0.cuda()
-    net_0.eval()
 
-    imdb_1 = get_imdb(imdb_test_name_1)
+
+    imdb_1 = get_imdb(imdb_name_1)
     imdb_1.competition_mode(on=True)
-    net_1 = FasterRCNN(classes=imdb_1.classes, debug=False)
-    network.load_net(trained_model_1, net_1)
-    print('load model 1 successfully!')
-    net_1.cuda()
-    net_1.eval()
 
+    net = FasterRCNN_y(classes=imdb_1.classes, debug=False)
+    network.load_net(trained_model, net)
+    print('load model successfully!')
+    net.cuda()
+    net.eval()
 
-    net_x = FasterRCNN_x(classes=imdb_0.classes, debug=False)
-    net_x.frcnn_0 = net_0
-    net_x.frcnn_1 = net_1
-    net_x.cuda()
-    net_x.eval()
     # evaluation
-    test_net_x(net_x, imdb_0, imdb_1, max_per_image, thresh=thresh, vis=vis)
+    test_net_y(net, imdb_0, imdb_1, max_per_image, thresh=thresh, vis=vis)
