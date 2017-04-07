@@ -39,17 +39,16 @@ encoding_0 = 'Images'
 encoding_1 = 'Jet'
 
 
-imdb_train_name_0 = 'inout_'+split_train+'_'+encoding_0
-imdb_train_name_1 = 'inout_'+split_train+'_'+encoding_1
-imdb_test_name_0 = 'inout_'+split_test+'_'+encoding_0
-imdb_test_name_1 = 'inout_'+split_test+'_'+encoding_1
+imdb_train_name_0 = 'inout_jg_train_Images'
+imdb_train_name_1 = 'inout_jg_train_Depth'
+imdb_test_name_0 = 'oneraroom_easy_rgb'
+imdb_test_name_1 = 'oneraroom_easy_depth_8bits'
 
-
-save_name = 'inout_x_'+split_train+'_on_'+split_test+'_'+encoding_0+'-'+encoding_1+'_10000'
+save_name = 'inout_x_on_oneraroom_easy_rgbd_10000'
 trained_model_0 = pytorchpath+'models/'+imdb_train_name_0+'/faster_rcnn_10000.h5'
 trained_model_1 = pytorchpath+'models/'+imdb_train_name_1+'/faster_rcnn_10000.h5'
 
-output_dir = pytorchpath+'output/faster_rcnn_inout_exp/'
+output_dir = pytorchpath+'output/faster_rcnn_oneraroom_exp/'
 output_dir_detections = output_dir+save_name+'/detections/'
 det_file = output_dir+save_name+'/detections'+save_name+'.pkl'
 
@@ -67,7 +66,7 @@ mkdir_p(output_dir_detections)
 
 
 
-cfg_file = pytorchpath+'experiments/cfgs/faster_rcnn_end2end_inout.yml'
+cfg_file = pytorchpath+'experiments/cfgs/faster_rcnn_end2end_oneraroom.yml'
 rand_seed = 1024
 
 max_per_image = 300

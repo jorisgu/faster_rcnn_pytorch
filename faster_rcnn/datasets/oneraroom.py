@@ -335,6 +335,7 @@ class oneraroom(imdb):
                                    dets[k, 2] + 1, dets[k, 3] + 1))
 
     def _do_python_eval(self, output_dir = 'output'):
+        print 'outputdir:',output_dir
         annopath = os.path.join(
             self._data_path,
             'annotations', '{:s}.xml')
@@ -357,6 +358,8 @@ class oneraroom(imdb):
                                      ovthresh=0.5, use_07_metric = use_07_metric)
             aps += [ap]
             print('AP for {} = {:.4f}'.format(cls, ap))
+            print 'rec',rec
+            print 'prec',prec
             with open(os.path.join(output_dir, cls + '_pr.pkl'), 'w') as f:
                 cPickle.dump({'rec': rec, 'prec': prec, 'ap': ap}, f)
         print('Mean AP = {:.4f}'.format(np.mean(aps)))
