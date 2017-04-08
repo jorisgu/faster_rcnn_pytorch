@@ -42,7 +42,7 @@ pytorchpath = os.environ['PWD']+'/'
 # pytorchpath = '/home/jguerry/workspace/jg_dl/jg_pyt/'
 
 
-imdb_name = 'inout_jg_train_Jet'
+imdb_name = 'inout_train_Cube'
 output_dir = pytorchpath+'models/'+imdb_name+'/'
 
 cfg_file = pytorchpath+'experiments/cfgs/faster_rcnn_end2end_inout.yml'

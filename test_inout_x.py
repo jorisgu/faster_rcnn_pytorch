@@ -32,8 +32,8 @@ pytorchpath = os.environ['PWD']+'/'
 # encodings = ['Images', 'Depth', 'Cube', 'Jet', 'HHA']
 
 
-split_train = 'jg_train'
-split_test = 'jg_test'
+split_train = 'train'
+split_test = 'test'
 
 encoding_0 = 'Images'
 encoding_1 = 'Jet'
