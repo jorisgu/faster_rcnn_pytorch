@@ -12,7 +12,7 @@ from faster_rcnn.fast_rcnn.config import cfg, cfg_from_file
 pytorchpath = '/home/jguerry/workspace/jg_dl/jg_pyt/'
 
 imdb_name = 'oneraroom_easy_rgb'
-
+output_dir = pytorchpath+'output/faster_rcnn_oneraroom_exp/'
 correspondance_file = output_dir+imdb_name+'/correspondance_name_indice.txt'
 
 
