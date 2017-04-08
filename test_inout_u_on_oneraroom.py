@@ -3,6 +3,7 @@ import torch
 import cv2
 import cPickle
 import numpy as np
+import errno
 
 from faster_rcnn import network
 from faster_rcnn.faster_rcnn import FasterRCNN, RPN
@@ -13,6 +14,14 @@ from faster_rcnn.fast_rcnn.bbox_transform import bbox_transform_inv, clip_boxes
 from faster_rcnn.datasets.factory import get_imdb
 from faster_rcnn.fast_rcnn.config import cfg, cfg_from_file, get_output_dir
 
+def mkdir_p(path):
+    try:
+        os.makedirs(path)
+    except OSError as exc:  # Python >2.5
+        if exc.errno == errno.EEXIST and os.path.isdir(path):
+            pass
+        else:
+            raise
 
 # hyper-parameters
 # ------------
