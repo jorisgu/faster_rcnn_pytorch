@@ -228,3 +228,4 @@ if __name__ == '__main__':
     net_x.eval()
     # evaluation
     test_net_x(net_x, imdb_0, imdb_1, max_per_image, thresh=thresh, vis=vis)
+#
