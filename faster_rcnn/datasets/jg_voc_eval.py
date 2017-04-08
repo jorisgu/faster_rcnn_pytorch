@@ -107,9 +107,8 @@ def voc_eval(detpath,
     recs = {}
     for i, imagename in enumerate(imagenames):
         recs[imagename] = parse_rec(annopath.format(imagename))
-        if i % 200 == 0:
-            print 'Reading annotation for {:d}/{:d}'.format(
-                i + 1, len(imagenames))
+        # if i % 200 == 0:
+        #     print 'Reading annotation for {:d}/{:d}'.format(i + 1, len(imagenames))
     # # save
     # print 'Saving cached annotations to {:s}'.format(cachefile)
     # with open(cachefile, 'w') as f:
