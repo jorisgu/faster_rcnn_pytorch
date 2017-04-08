@@ -36,13 +36,13 @@ imdb_train_name_1 = 'inout_train_Depth'
 imdb_test_name_0 = 'oneraroom_easy_rgb'
 imdb_test_name_1 = 'oneraroom_easy_depth_8bits'
 
-save_name = 'inout_x_train_on_oneraroom_easy_rgbd_10000'
+save_name = 'inout_x_train_on_oneraroom_easy_rgbd_10000_blackout'
 trained_model_0 = pytorchpath+'models/'+imdb_train_name_0+'/faster_rcnn_10000.h5'
 trained_model_1 = pytorchpath+'models/'+imdb_train_name_1+'/faster_rcnn_10000.h5'
 
 output_dir = pytorchpath+'output/faster_rcnn_oneraroom_exp/'
 output_dir_detections = output_dir+save_name+'/detections/'
-det_file = output_dir+save_name+'/detections'+save_name+'.pkl'
+det_file = output_dir+save_name+'/detections_'+save_name+'.pkl'
 
 mkdir_p(output_dir_detections)
 
@@ -99,7 +99,7 @@ def im_detect(net_x, image_0, image_1):
     """
 
     im_data_0, im_scales_0 = net_x.frcnn_0.get_image_blob(image_0)
-    # im_data_0=0*im_data_0
+    im_data_0=0*im_data_0
     im_data_1, im_scales_1 = net_x.frcnn_1.get_image_blob(image_1)
 
     im_info = np.array(
