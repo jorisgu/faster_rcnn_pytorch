@@ -3,6 +3,7 @@ import torch
 import cv2
 import cPickle
 import numpy as np
+import errno
 
 from faster_rcnn import network
 from faster_rcnn.faster_rcnn import FasterRCNN, RPN
@@ -13,21 +14,32 @@ from faster_rcnn.fast_rcnn.bbox_transform import bbox_transform_inv, clip_boxes
 from faster_rcnn.datasets.factory import get_imdb
 from faster_rcnn.fast_rcnn.config import cfg, cfg_from_file, get_output_dir
 
+def mkdir_p(path):
+    try:
+        os.makedirs(path)
+    except OSError as exc:  # Python >2.5
+        if exc.errno == errno.EEXIST and os.path.isdir(path):
+            pass
+        else:
+            raise
 
 # hyper-parameters
 # ------------
-pytorchpath = '/data02/jguerry/jg_pyt/'
+pytorchpath = os.environ['PWD']+'/'
 
-imdb_name_0 = 'inout_test_Images'
-imdb_name_1 = 'inout_test_Depth'
 
-save_name = 'inout_u_test_rgbd_100000'
-trained_model_0 = pytorchpath+'models/inout_train_Images/faster_rcnn_10000.h5'
-trained_model_1 = pytorchpath+'models/inout_train_Depth/faster_rcnn_10000.h5'
+imdb_train_name_0 = 'inout_train_Images'
+imdb_train_name_1 = 'inout_train_Depth'
+imdb_test_name_0 = 'inout_test_Images'
+imdb_test_name_1 = 'inout_test_Depth'
+
+save_name = 'inout_u_train_on_test_rgbd_10000'
+trained_model_0 = pytorchpath+'models/'+imdb_train_name_0+'/faster_rcnn_10000.h5'
+trained_model_1 = pytorchpath+'models/'+imdb_train_name_1+'/faster_rcnn_10000.h5'
 
 output_dir = pytorchpath+'output/faster_rcnn_inout_exp/'
-output_dir_detections = output_dir+imdb_name_0+'_'+imdb_name_1+'/detections_'+save_name+'/'
-det_file = output_dir+imdb_name_0+'_'+imdb_name_1+'/detections_'+save_name+'.pkl'
+output_dir_detections = output_dir+save_name+'/detections/'
+det_file = output_dir+save_name+'/detections_'+save_name+'.pkl'
 
 mkdir_p(output_dir_detections)
 
@@ -43,7 +55,7 @@ mkdir_p(output_dir_detections)
 
 
 
-cfg_file = pytorchpath+'experiments/cfgs/faster_rcnn_end2end_inout.yml'
+cfg_file = pytorchpath+'experiments/cfgs/faster_rcnn_end2end_oneraroom.yml'
 
 rand_seed = 1024
 
@@ -116,11 +128,11 @@ def test_net_u(net_0,net_1, imdb_0,imdb_1, max_per_image=300, thresh=0.05, vis=F
 
     # timers
     _t = {'im_detect': Timer(), 'misc': Timer()}
-    det_file_u = os.path.join(output_dir, 'detections_u.pkl')
 
     for i in range(num_images):
 
         im_0 = cv2.imread(imdb_0.image_path_at(i))
+        # im_0=0*im_0
         im_1 = cv2.imread(imdb_1.image_path_at(i))
 
         _t['im_detect'].tic()
@@ -185,7 +197,7 @@ def test_net_u(net_0,net_1, imdb_0,imdb_1, max_per_image=300, thresh=0.05, vis=F
         if sav:
             cv2.imwrite(output_dir_detections+str(i)+'.png', im2show)
 
-    with open(det_file_u, 'wb') as f:
+    with open(det_file, 'wb') as f:
         cPickle.dump(all_boxes, f, cPickle.HIGHEST_PROTOCOL)
 
     print 'Evaluating detections'
@@ -194,7 +206,7 @@ def test_net_u(net_0,net_1, imdb_0,imdb_1, max_per_image=300, thresh=0.05, vis=F
 
 if __name__ == '__main__':
 
-    imdb_0 = get_imdb(imdb_name_0)
+    imdb_0 = get_imdb(imdb_test_name_0)
     imdb_0.competition_mode(on=True)
     net_0 = FasterRCNN(classes=imdb_0.classes, debug=False)
     network.load_net(trained_model_0, net_0)
@@ -202,7 +214,7 @@ if __name__ == '__main__':
     net_0.cuda()
     net_0.eval()
 
-    imdb_1 = get_imdb(imdb_name_1)
+    imdb_1 = get_imdb(imdb_test_name_1)
     imdb_1.competition_mode(on=True)
     net_1 = FasterRCNN(classes=imdb_1.classes, debug=False)
     network.load_net(trained_model_1, net_1)
