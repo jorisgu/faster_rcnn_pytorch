@@ -47,7 +47,7 @@ def print_correspondance(imdb):
         for i in range(num_images):
             im_path_in = imdb.image_path_at(i)
             im_path_out = str(i)+'.png'
-            thefile.write(im_path_in+' -> '+im_path_out)
+            f.write(im_path_in+' -> '+im_path_out)
 
 
 if __name__ == '__main__':
