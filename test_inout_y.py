@@ -31,7 +31,7 @@ pytorchpath = '/data02/jguerry/jg_pyt/'
 imdb_name_0 = 'inout_test_Images'
 imdb_name_1 = 'inout_test_Depth'
 
-save_name = 'inout_y_100000'
+save_name = 'inout_y_test_rgbd_100000'
 trained_model = pytorchpath+'models/inout_y/faster_rcnn_100000.h5'
 
 output_dir = pytorchpath+'output/faster_rcnn_inout_exp/'
