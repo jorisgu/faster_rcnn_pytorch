@@ -27,10 +27,6 @@ def mkdir_p(path):
 # ------------zz
 pytorchpath = os.environ['PWD']+'/'
 
-
-# split = ['train', 'test', 'seq0', 'seq1', 'seq2', 'seq3', 'seq01', 'seq02', 'seq12', 'jg_train', 'jg_test']
-# encodings = ['Images', 'Depth', 'Cube', 'Jet', 'HHA']
-
 imdb_train_name_0 = 'inout_train_Images'
 imdb_train_name_1 = 'inout_train_Depth'
 imdb_test_name_0 = 'oneraroom_easy_rgb'
@@ -45,16 +41,6 @@ output_dir_detections = output_dir+save_name+'/detections/'
 det_file = output_dir+save_name+'/detections_'+save_name+'.pkl'
 
 mkdir_p(output_dir_detections)
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -27,43 +27,20 @@ def mkdir_p(path):
 # ------------zz
 pytorchpath = os.environ['PWD']+'/'
 
+imdb_train_name_0 = 'inout_train_Images'
+imdb_train_name_1 = 'inout_train_Depth'
+imdb_test_name_0 = 'inout_test_Images'
+imdb_test_name_1 = 'inout_test_Depth'
 
-# split = ['train', 'test', 'seq0', 'seq1', 'seq2', 'seq3', 'seq01', 'seq02', 'seq12', 'jg_train', 'jg_test']
-# encodings = ['Images', 'Depth', 'Cube', 'Jet', 'HHA']
-
-
-split_train = 'train'
-split_test = 'test'
-
-encoding_0 = 'Images'
-encoding_1 = 'Cube'
-
-
-imdb_train_name_0 = 'inout_'+split_train+'_'+encoding_0
-imdb_train_name_1 = 'inout_'+split_train+'_'+encoding_1
-imdb_test_name_0 = 'inout_'+split_test+'_'+encoding_0
-imdb_test_name_1 = 'inout_'+split_test+'_'+encoding_1
-
-
-save_name = 'inout_x_'+split_train+'_on_'+split_test+'_'+encoding_0+'-'+encoding_1+'_10000'
+save_name = 'inout_x_train_on_test_rgbd_10000'
 trained_model_0 = pytorchpath+'models/'+imdb_train_name_0+'/faster_rcnn_10000.h5'
 trained_model_1 = pytorchpath+'models/'+imdb_train_name_1+'/faster_rcnn_10000.h5'
 
 output_dir = pytorchpath+'output/faster_rcnn_inout_exp/'
 output_dir_detections = output_dir+save_name+'/detections/'
-det_file = output_dir+save_name+'/detections'+save_name+'.pkl'
+det_file = output_dir+save_name+'/detections_'+save_name+'.pkl'
 
 mkdir_p(output_dir_detections)
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -108,6 +85,7 @@ def im_detect(net_x, image_0, image_1):
     """
 
     im_data_0, im_scales_0 = net_x.frcnn_0.get_image_blob(image_0)
+    # im_data_0=0*im_data_0
     im_data_1, im_scales_1 = net_x.frcnn_1.get_image_blob(image_1)
 
     im_info = np.array(
