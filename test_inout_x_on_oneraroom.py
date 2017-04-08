@@ -57,9 +57,6 @@ sav = True
 if rand_seed is not None:
     np.random.seed(rand_seed)
 
-if rand_seed is not None:
-    np.random.seed(rand_seed)
-
 # load config
 cfg_from_file(cfg_file)
 

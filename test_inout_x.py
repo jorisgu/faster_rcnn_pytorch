@@ -32,7 +32,7 @@ imdb_train_name_1 = 'inout_train_Depth'
 imdb_test_name_0 = 'inout_test_Images'
 imdb_test_name_1 = 'inout_test_Depth'
 
-save_name = 'inout_x_train_on_test_rgbd_10000'
+save_name = 'inout_x_train_on_test_rgbd_10000_blackout'
 
 trained_model_0 = pytorchpath+'models/'+imdb_train_name_0+'/faster_rcnn_10000.h5'
 trained_model_1 = pytorchpath+'models/'+imdb_train_name_1+'/faster_rcnn_10000.h5'
@@ -54,9 +54,6 @@ vis = True
 sav = True
 
 # ------------
-
-if rand_seed is not None:
-    np.random.seed(rand_seed)
 
 if rand_seed is not None:
     np.random.seed(rand_seed)
@@ -86,7 +83,7 @@ def im_detect(net_x, image_0, image_1):
     """
 
     im_data_0, im_scales_0 = net_x.frcnn_0.get_image_blob(image_0)
-    # im_data_0=0*im_data_0
+    im_data_0=0*im_data_0
     im_data_1, im_scales_1 = net_x.frcnn_1.get_image_blob(image_1)
 
     im_info = np.array(

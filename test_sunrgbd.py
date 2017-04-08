@@ -33,29 +33,11 @@ save_name = imdb_model+'_on_'+imdb_name
 trained_model = pytorchpath+'models/'+imdb_model+'/faster_rcnn_100000.h5'
 
 
-
-
-# trained_model = '/media/longc/Data/models/VGGnet_fast_rcnn_iter_70000.h5'
-# trained_model = 'models/saved_model3/faster_rcnn_90000.h5'
-
-
-
-
 output_dir = pytorchpath+'output/faster_rcnn_sunrgbd_exp/'
 output_dir_detections = output_dir+imdb_name+'/detections_'+save_name+'/'
 det_file = output_dir+imdb_name+'/detections_'+save_name+'.pkl'
 
 mkdir_p(output_dir_detections)
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -73,8 +55,6 @@ sav = True
 if rand_seed is not None:
     np.random.seed(rand_seed)
 
-if rand_seed is not None:
-    np.random.seed(rand_seed)
 
 # load config
 cfg_from_file(cfg_file)
