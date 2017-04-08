@@ -128,7 +128,6 @@ def test_net_u(net_0,net_1, imdb_0,imdb_1, max_per_image=300, thresh=0.05, vis=F
 
     # timers
     _t = {'im_detect': Timer(), 'misc': Timer()}
-    det_file_u = os.path.join(output_dir, 'detections_u.pkl')
 
     for i in range(num_images):
 
@@ -198,7 +197,7 @@ def test_net_u(net_0,net_1, imdb_0,imdb_1, max_per_image=300, thresh=0.05, vis=F
         if sav:
             cv2.imwrite(output_dir_detections+str(i)+'.png', im2show)
 
-    with open(det_file_u, 'wb') as f:
+    with open(det_file, 'wb') as f:
         cPickle.dump(all_boxes, f, cPickle.HIGHEST_PROTOCOL)
 
     print 'Evaluating detections'
