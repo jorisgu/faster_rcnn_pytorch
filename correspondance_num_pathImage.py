@@ -11,21 +11,11 @@ from faster_rcnn.fast_rcnn.config import cfg, cfg_from_file
 # pytorchpath = '/data02/jguerry/jg_pyt/'
 pytorchpath = '/home/jguerry/workspace/jg_dl/jg_pyt/'
 
-imdb_name = 'oneraroom_easy_rgb'
-output_dir = pytorchpath+'output/faster_rcnn_oneraroom_exp/'
-correspondance_file = output_dir+imdb_name+'/correspondance_name_indice.txt'
+imdb_name = 'inout_test_Images'
+output_dir = pytorchpath+'output/faster_rcnn_inout_exp/'
+correspondance_file = output_dir+'/correspondance_name_indice.txt'
 
-
-
-
-
-
-
-
-
-
-
-cfg_file = pytorchpath+'experiments/cfgs/faster_rcnn_end2end_oneraroom.yml'
+cfg_file = pytorchpath+'experiments/cfgs/faster_rcnn_end2end_inout.yml'
 rand_seed = 1024
 if rand_seed is not None:
     np.random.seed(rand_seed)
