@@ -29,31 +29,11 @@ pytorchpath = os.environ['PWD']+'/'
 
 imdb_train_name_0 = 'inout_train_Images'
 imdb_train_name_1 = 'inout_train_Depth'
-imdb_test_name_0 = 'inout_test_Images'
-imdb_test_name_1 = 'inout_test_Depth'
+# imdb_test_name_0 = 'inout_test_Images'
+# imdb_test_name_1 = 'inout_test_Depth'
 
-<<<<<<< HEAD
-# split = ['train', 'test', 'seq0', 'seq1', 'seq2', 'seq3', 'seq01', 'seq02', 'seq12', 'jg_train', 'jg_test']
-# encodings = ['Images', 'Depth', 'Cube', 'Jet', 'HHA']
-
-
-split_train = 'train'
-split_test = 'test'
-
-encoding_0 = 'Images'
-encoding_1 = 'Depth'
-
-
-imdb_train_name_0 = 'inout_'+split_train+'_'+encoding_0
-imdb_train_name_1 = 'inout_'+split_train+'_'+encoding_1
-imdb_test_name_0 = 'inout_'+split_test+'_'+encoding_0
-imdb_test_name_1 = 'inout_'+split_test+'_'+encoding_1
-
-
-save_name = 'inout_x_'+split_train+'_on_'+split_test+'_'+encoding_0+'-'+encoding_1+'_10000'
-=======
 save_name = 'inout_x_train_on_test_rgbd_10000'
->>>>>>> f6f2da3f08e1d261c96fd19798edfa86a1fba890
+
 trained_model_0 = pytorchpath+'models/'+imdb_train_name_0+'/faster_rcnn_10000.h5'
 trained_model_1 = pytorchpath+'models/'+imdb_train_name_1+'/faster_rcnn_10000.h5'
 
@@ -249,4 +229,3 @@ if __name__ == '__main__':
     net_x.eval()
     # evaluation
     test_net_x(net_x, imdb_0, imdb_1, max_per_image, thresh=thresh, vis=vis)
-#
