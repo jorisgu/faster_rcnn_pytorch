@@ -208,4 +208,5 @@ def voc_eval(detpath,
          iou = 0
 
 
-    return rec, prec, ap, tp, fp, iou
+
+    return rec, prec, ap, tp, fp, iou, npos

@@ -36,7 +36,7 @@ split_train = 'train'
 split_test = 'test'
 
 encoding_0 = 'Images'
-encoding_1 = 'Jet'
+encoding_1 = 'Cube'
 
 
 imdb_train_name_0 = 'inout_'+split_train+'_'+encoding_0
