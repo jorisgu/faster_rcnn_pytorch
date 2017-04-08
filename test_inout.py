@@ -27,10 +27,10 @@ def mkdir_p(path):
 # pytorchpath = '/data02/jguerry/jg_pyt/'
 pytorchpath = '/home/jguerry/workspace/jg_dl/jg_pyt/'
 
-imdb_name = 'inout_test_Images'
-imdb_model = 'inout_train_Images'
-# imdb_name = 'inout_test_Depth'
-# imdb_model = 'inout_train_Depth'
+# imdb_name = 'inout_test_Images'
+# imdb_model = 'inout_train_Images'
+imdb_name = 'inout_test_Depth'
+imdb_model = 'inout_train_Depth'
 save_name = imdb_model+'_on_'+imdb_name
 trained_model = pytorchpath+'models/'+imdb_model+'/faster_rcnn_10000.h5'
 
