@@ -16,6 +16,9 @@ from faster_rcnn.fast_rcnn.config import cfg, cfg_from_file, get_output_dir
 
 # hyper-parameters
 # ------------
+pytorchpath = os.environ['PWD']+'/'
+
+
 imdb_train_name_0 = 'inout_train_Images'
 imdb_train_name_1 = 'inout_train_Depth'
 imdb_test_name_0 = 'oneraroom_easy_rgb'
