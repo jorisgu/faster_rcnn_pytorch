@@ -62,8 +62,6 @@ cfg_from_file(cfg_file)
 
 def vis_detections(im, class_name, dets, thresh=0.8):
     """Visual debugging of detections."""
-    if 'epth' in imdb_name:
-        cv2.normalize(im, im, 0, 255, cv2.NORM_MINMAX)
     for i in range(np.minimum(10, dets.shape[0])):
         bbox = tuple(int(np.round(x)) for x in dets[i, :4])
         score = dets[i, -1]

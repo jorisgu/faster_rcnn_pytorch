@@ -36,7 +36,7 @@ imdb_train_name_1 = 'inout_train_Depth'
 imdb_test_name_0 = 'oneraroom_easy_rgb'
 imdb_test_name_1 = 'oneraroom_easy_depth_8bits'
 
-save_name = 'inout_x_on_oneraroom_easy_rgbd_10000'
+save_name = 'inout_x_train_on_oneraroom_easy_rgbd_10000'
 trained_model_0 = pytorchpath+'models/'+imdb_train_name_0+'/faster_rcnn_10000.h5'
 trained_model_1 = pytorchpath+'models/'+imdb_train_name_1+'/faster_rcnn_10000.h5'
 
@@ -80,8 +80,6 @@ cfg_from_file(cfg_file)
 
 def vis_detections(im, class_name, dets, thresh=0.8):
     """Visual debugging of detections."""
-    if 'epth' in imdb_name:
-        cv2.normalize(im, im, 0, 255, cv2.NORM_MINMAX)
     for i in range(np.minimum(10, dets.shape[0])):
         bbox = tuple(int(np.round(x)) for x in dets[i, :4])
         score = dets[i, -1]
