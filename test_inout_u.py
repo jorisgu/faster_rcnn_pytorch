@@ -33,7 +33,7 @@ imdb_train_name_1 = 'inout_train_Depth'
 imdb_test_name_0 = 'inout_test_Images'
 imdb_test_name_1 = 'inout_test_Depth'
 
-save_name = 'inout_u_train_on_test_rgbd_10000'
+save_name = 'inout_u_train_on_test_rgbd_10000_blackout'
 trained_model_0 = pytorchpath+'models/'+imdb_train_name_0+'/faster_rcnn_10000.h5'
 trained_model_1 = pytorchpath+'models/'+imdb_train_name_1+'/faster_rcnn_10000.h5'
 
@@ -123,7 +123,7 @@ def test_net_u(net_0,net_1, imdb_0,imdb_1, max_per_image=300, thresh=0.05, vis=F
     for i in range(num_images):
 
         im_0 = cv2.imread(imdb_0.image_path_at(i))
-        # im_0=0*im_0
+        im_0=0*im_0
         im_1 = cv2.imread(imdb_1.image_path_at(i))
 
         _t['im_detect'].tic()
