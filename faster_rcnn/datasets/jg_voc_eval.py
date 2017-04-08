@@ -120,6 +120,7 @@ def voc_eval(detpath,
 
     # extract gt objects for this class
     class_recs = {}
+    img_relative_tp = {}
     npos = 0
     for imagename in imagenames:
         R = [obj for obj in recs[imagename] if obj['name'] == classname]
@@ -130,6 +131,7 @@ def voc_eval(detpath,
         class_recs[imagename] = {'bbox': bbox,
                                  'difficult': difficult,
                                  'det': det}
+        img_relative_tp[imagename] = 0
 
     # read dets
     detfile = detpath.format(classname)
@@ -184,6 +186,7 @@ def voc_eval(detpath,
                     if not R['det'][jmax]:
                         tp[d] = 1.
                         R['det'][jmax] = 1
+                        img_relative_tp[image_ids[d]]+=1
                         iou[d]=ovmax
                     else:
                         fp[d] = 1.
@@ -208,4 +211,4 @@ def voc_eval(detpath,
 
 
 
-    return rec, prec, ap, tp, fp, iou, npos
+    return rec, prec, ap, tp, fp, iou, npos, img_relative_tp
