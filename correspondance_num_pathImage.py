@@ -3,7 +3,7 @@ import numpy as np
 
 
 from faster_rcnn.datasets.factory import get_imdb
-from faster_rcnn.fast_rcnn.config import cfg, cfg_from_file, get_output_dir
+from faster_rcnn.fast_rcnn.config import cfg, cfg_from_file
 
 
 # hyper-parameters
@@ -43,19 +43,11 @@ def print_correspondance(imdb):
     """Test a Fast R-CNN network on an image database."""
     num_images = len(imdb.image_index)
 
-
-
-
-
-
     with open(correspondance_file, 'wb') as f:
         for i in range(num_images):
             im_path_in = imdb.image_path_at(i)
             im_path_out = str(i)+'.png'
             thefile.write(im_path_in+' -> '+im_path_out)
-
-    print 'Evaluating detections'
-    imdb.evaluate_detections(all_boxes, output_dir)
 
 
 if __name__ == '__main__':
