@@ -34,7 +34,7 @@ imdb_name_1 = 'inout_test_Depth'
 save_name = 'inout_y_train_on_inout_rgbd_100000'
 trained_model = pytorchpath+'models/inout_y/faster_rcnn_100000.h5'
 
-output_dir = pytorchpath+'output/faster_rcnn_oneraroom_exp/'
+output_dir = pytorchpath+'output/faster_rcnn_inout_exp/'
 output_dir_detections = output_dir+save_name+'/detections/'
 det_file = output_dir+save_name+'/detections_'+save_name+'.pkl'
 
