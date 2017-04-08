@@ -24,20 +24,15 @@ def mkdir_p(path):
             raise
 # hyper-parameters
 # ------------
-#pytorchpath = '/data02/jguerry/jg_pyt/'
+# pytorchpath = '/data02/jguerry/jg_pyt/'
 pytorchpath = '/home/jguerry/workspace/jg_dl/jg_pyt/'
 
-imdb_name = 'inout_test_Cube'
-save_name = 'inout_train_Cube_on_inout_test_Cube_10000'
-trained_model = pytorchpath+'models/inout_train_Cube/faster_rcnn_10000.h5'
-
-
-
-
-# trained_model = '/media/longc/Data/models/VGGnet_fast_rcnn_iter_70000.h5'
-# trained_model = 'models/saved_model3/faster_rcnn_90000.h5'
-
-
+imdb_name = 'inout_test_Images'
+imdb_model = 'inout_train_Images'
+# imdb_name = 'inout_test_Depth'
+# imdb_model = 'inout_train_Depth'
+save_name = imdb_model+'_on_'+imdb_name
+trained_model = pytorchpath+'models/'+imdb_model+'/faster_rcnn_10000.h5'
 
 
 output_dir = pytorchpath+'output/faster_rcnn_inout_exp/'
@@ -50,15 +45,7 @@ mkdir_p(output_dir_detections)
 
 
 
-
-
-
-
-
-
-
-
-cfg_file = pytorchpath+'experiments/cfgs/faster_rcnn_end2end_inout.yml'
+cfg_file = pytorchpath+'experiments/cfgs/faster_rcnn_end2end_oneraroom.yml'
 rand_seed = 1024
 
 
