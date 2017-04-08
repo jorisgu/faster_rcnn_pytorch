@@ -29,8 +29,8 @@ pytorchpath = os.environ['PWD']+'/'
 
 imdb_train_name_0 = 'inout_train_Images'
 imdb_train_name_1 = 'inout_train_Depth'
-# imdb_test_name_0 = 'inout_test_Images'
-# imdb_test_name_1 = 'inout_test_Depth'
+imdb_test_name_0 = 'inout_test_Images'
+imdb_test_name_1 = 'inout_test_Depth'
 
 save_name = 'inout_x_train_on_test_rgbd_10000'
 
