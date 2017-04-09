@@ -46,7 +46,7 @@ for i in range(2):
 
 
 
-        cfg_file = pytorchpath+'experiments/cfgs/faster_rcnn_end2end_rgbd.yml'
+        cfg_file = pytorchpath+'experiments/cfgs/faster_rcnn_end2end_rgbdp.yml'
         rand_seed = 1024
 
 
