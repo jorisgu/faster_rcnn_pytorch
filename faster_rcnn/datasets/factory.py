@@ -16,6 +16,7 @@ from .imagenet3d import imagenet3d
 from .kitti import kitti
 from .sunrgbd import sunrgbd
 from .inout import inout
+from .rgbdp import rgbdp
 from .oneraroom import oneraroom
 from .kitti_tracking import kitti_tracking
 from .nthu import nthu
@@ -64,6 +65,12 @@ for split in ['all','nb','easy','average','hard']:
     for encoding in ['rgb', 'depth_8bits']:
         name = 'oneraroom_{}_{}'.format(split,encoding)
         __sets[name] = (lambda split=split, encoding=encoding: oneraroom(split,encoding))
+
+# # rgbdp dataset
+for split in ['all']:
+    for encoding in ['rgb', 'depth']:
+        name = 'rgbdp_{}_{}'.format(split,encoding)
+        __sets[name] = (lambda split=split, encoding=encoding: rgbdp(split,encoding))
 
 # # KITTI dataset
 for split in ['train', 'val', 'trainval', 'test']:
