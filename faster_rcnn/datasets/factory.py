@@ -67,16 +67,11 @@ for split in ['all','nb','easy','average','hard']:
         __sets[name] = (lambda split=split, encoding=encoding: oneraroom(split,encoding))
 
 # # rgbdp dataset
-for split in ['all']:
+for split in ['all','train_0','train_1','train_2','train_3','train_4','test_0','test_1','test_2','test_3','test_4']:
     for encoding in ['rgb', 'depth']:
         name = 'rgbdp_{}_{}'.format(split,encoding)
         __sets[name] = (lambda split=split, encoding=encoding: rgbdp(split,encoding))
-for split in ['train', 'test']:
-    for num in range(5):
-        for encoding in ['rgb', 'depth']:
-            full_split_name = split+'_'+str(num)
-            name = 'rgbdp_{}_{}'.format(full_split_name,encoding)
-            __sets[name] = (lambda split=full_split_name, encoding=encoding: rgbdp(full_split_name,encoding))
+
 
 # # KITTI dataset
 for split in ['train', 'val', 'trainval', 'test']:
