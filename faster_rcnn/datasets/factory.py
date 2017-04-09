@@ -74,8 +74,9 @@ for split in ['all']:
 for split in ['train', 'test']:
     for num in range(5):
         for encoding in ['rgb', 'depth']:
-            name = 'rgbdp_{}_{}_{}'.format(split,num,encoding)
-            __sets[name] = (lambda split=split, encoding=encoding: rgbdp(split,encoding))
+            full_split_name = split+'_'+str(num)
+            name = 'rgbdp_{}_{}'.format(full_split_name,encoding)
+            __sets[name] = (lambda split=full_split_name, encoding=encoding: rgbdp(full_split_name,encoding))
 
 # # KITTI dataset
 for split in ['train', 'val', 'trainval', 'test']:
