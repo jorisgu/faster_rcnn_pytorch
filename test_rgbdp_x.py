@@ -30,10 +30,10 @@ pytorchpath = os.environ['PWD']+'/'
 for i in [0,1,2,3]:
     num=i
 
-    imdb_train_name_0 = 'rgbd_train_'+str(num)+'_rgb'
-    imdb_train_name_1 = 'rgbd_train_'+str(num)+'_depth'
-    imdb_test_name_0 = 'rgbd_test_'+str(num)+'_rgb'
-    imdb_test_name_1 = 'rgbd_test_'+str(num)+'_depth'
+    imdb_train_name_0 = 'rgbdp_train_'+str(num)+'_rgb'
+    imdb_train_name_1 = 'rgbdp_train_'+str(num)+'_depth'
+    imdb_test_name_0 = 'rgbdp_test_'+str(num)+'_rgb'
+    imdb_test_name_1 = 'rgbdp_test_'+str(num)+'_depth'
 
     save_name = 'rgbdp_x_train_'+str(num)+'_on_test_'+str(num)+'_rgbd_5000'
 
