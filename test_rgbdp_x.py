@@ -27,7 +27,7 @@ def mkdir_p(path):
 # ------------zz
 pytorchpath = os.environ['PWD']+'/'
 
-for i in range(5):
+for i in [0,1,2,3,4]:
     num=i
 
     imdb_train_name_0 = 'rgbd_train_'+str(num)+'_rgb'
