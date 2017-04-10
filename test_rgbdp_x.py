@@ -203,29 +203,29 @@ for i in [0,1,2,3]:
         imdb_0.evaluate_detections(all_boxes, output_dir)
 
 
-        # if __name__ == '__main__':
+    # if __name__ == '__main__':
 
-        imdb_0 = get_imdb(imdb_test_name_0)
-        imdb_0.competition_mode(on=True)
-        net_0 = FasterRCNN(classes=imdb_0.classes, debug=False)
-        network.load_net(trained_model_0, net_0)
-        print('load model 0 successfully!')
-        net_0.cuda()
-        net_0.eval()
+    imdb_0 = get_imdb(imdb_test_name_0)
+    imdb_0.competition_mode(on=True)
+    net_0 = FasterRCNN(classes=imdb_0.classes, debug=False)
+    network.load_net(trained_model_0, net_0)
+    print('load model 0 successfully!')
+    net_0.cuda()
+    net_0.eval()
 
-        imdb_1 = get_imdb(imdb_test_name_1)
-        imdb_1.competition_mode(on=True)
-        net_1 = FasterRCNN(classes=imdb_1.classes, debug=False)
-        network.load_net(trained_model_1, net_1)
-        print('load model 1 successfully!')
-        net_1.cuda()
-        net_1.eval()
+    imdb_1 = get_imdb(imdb_test_name_1)
+    imdb_1.competition_mode(on=True)
+    net_1 = FasterRCNN(classes=imdb_1.classes, debug=False)
+    network.load_net(trained_model_1, net_1)
+    print('load model 1 successfully!')
+    net_1.cuda()
+    net_1.eval()
 
 
-        net_x = FasterRCNN_x(classes=imdb_0.classes, debug=False)
-        net_x.frcnn_0 = net_0
-        net_x.frcnn_1 = net_1
-        net_x.cuda()
-        net_x.eval()
-        # evaluation
-        test_net_x(net_x, imdb_0, imdb_1, max_per_image, thresh=thresh, vis=vis)
+    net_x = FasterRCNN_x(classes=imdb_0.classes, debug=False)
+    net_x.frcnn_0 = net_0
+    net_x.frcnn_1 = net_1
+    net_x.cuda()
+    net_x.eval()
+    # evaluation
+    test_net_x(net_x, imdb_0, imdb_1, max_per_image, thresh=thresh, vis=vis)
