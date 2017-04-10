@@ -27,9 +27,8 @@ def mkdir_p(path):
 # pytorchpath = '/data02/jguerry/jg_pyt/'
 pytorchpath = '/home/jguerry/workspace/jg_dl/jg_pyt/'
 
-for i in [3]:
-    # for enc in ['rgb','depth']:
-    for enc in ['rgb']:
+for i in [4]:
+    for enc in ['rgb','depth']:
         imdb_name = 'rgbdp_test_'+str(i)+'_'+enc
         imdb_model = 'rgbdp_train_'+str(i)+'_'+enc
 
