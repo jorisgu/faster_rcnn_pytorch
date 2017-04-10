@@ -37,9 +37,9 @@ def log_print(text, color=None, on_color=None, attrs=None):
 
 pytorchpath = os.environ['PWD']+'/'
 
-for i in range(5):
+for i in [4]:
     for enc in ['rgb','depth']:
-        
+
         imdb_name = 'rgbdp_train_'+str(i)+'_'+enc
         output_dir = pytorchpath+'models/'+imdb_name+'/'
 
