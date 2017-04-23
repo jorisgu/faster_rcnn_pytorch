@@ -14,7 +14,7 @@ import numpy as np
 from .pascal_voc import pascal_voc
 from .imagenet3d import imagenet3d
 from .kitti import kitti
-from .sunrgbd import sunrgbd
+from .sunrgbd_ecmr import sunrgbd
 from .inout import inout
 from .rgbdp import rgbdp
 from .oneraroom import oneraroom

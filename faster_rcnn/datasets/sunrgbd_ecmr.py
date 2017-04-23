@@ -35,14 +35,11 @@ class sunrgbd(imdb):
         imdb.__init__(self, 'sunrgbd_' + image_set+'_'+encoding)
         self._image_set = image_set
         self._devkit_path = self._get_default_path() if devkit_path is None else devkit_path
-        self._data_path = os.path.join(self._devkit_path,'data')
+        self._data_path = self._devkit_path #os.path.join(self._devkit_path,'data')
         self.encoding = encoding
         self._classes = ('__background__', # always index 0
-                         #'wall',
-                        #'floor',
                         'cabinet',
                         'bed',
-                        #'chair',
                         'sofa',
                         'table',
                         'door',
@@ -57,9 +54,6 @@ class sunrgbd(imdb):
                         'dresser',
                         'pillow',
                         'mirror',
-                        #'floor_mat',
-                        #'clothes',
-                        #'ceiling',
                         'books',
                         'fridge',
                         'tv',
@@ -75,20 +69,12 @@ class sunrgbd(imdb):
                         'lamp',
                         'bathtub',
                         'bag',)
-
-        # 1 + freqMed/freq
-        self.classes_weights = np.asarray([-1, 1.421, 1.846,#1.009,
-        1.477, 1.082, 1.619, 39.25, 2.816, 1.725, 1.607, 4.898, 1.234, 613.0, 6.514, 1.688, 1.143,
-         3.86, 1.916, 7.955, 4.579, 2.0, 5.857, 103.0, 1.802, 1.52,
-         1.531, 2.471, 7.182, 3.409, 1.276, 10.415, 5.744], dtype=np.float32)
-
-
         self._class_to_ind = dict(zip(self.classes, xrange(self.num_classes)))
         self._image_ext = '.png'
         self._image_index = self._load_image_set_index()
         self._remove_empty_samples()
         # Default to roidb handler
-        # self._roidb_handler = self.selective_search_roidb
+        #self._roidb_handler = self.selective_search_roidb
         self._roidb_handler = self.gt_roidb
         self._salt = str(uuid.uuid4())
         self._comp_id = 'comp4'
@@ -96,13 +82,13 @@ class sunrgbd(imdb):
         # PASCAL specific config options
         self.config = {'cleanup'     : True,
                        'use_salt'    : True,
-                       'use_diff'    : False, # using difficult samples
+                       'use_diff'    : True, # using difficult samples
                        'matlab_eval' : False,
                        'rpn_file'    : None,
                        'min_size'    : 2}
 
-        assert os.path.exists(self._devkit_path), 'SUNRGBD path does not exist: {}'.format(self._devkit_path)
-        assert os.path.exists(self._data_path), 'Path does not exist: {}'.format(self._data_path)
+        assert os.path.exists(self._devkit_path), 'SUNRGBD devkit path does not exist: {}'.format(self._devkit_path)
+        assert os.path.exists(self._data_path), 'SUNRGBD dataPath does not exist: {}'.format(self._data_path)
 
     def image_path_at(self, i):
         """
@@ -126,14 +112,14 @@ class sunrgbd(imdb):
         """
         # Example path to image set file:
         image_set_file = os.path.join(self._data_path, 'sets', 'sunrgbd', self._image_set + '.txt')
-        assert os.path.exists(image_set_file), 'Path does not exist: {}'.format(image_set_file)
+        assert os.path.exists(image_set_file), 'Set Path does not exist: {}'.format(image_set_file)
         with open(image_set_file) as f:
             image_index = [x.strip() for x in f.readlines()]
         return image_index
 
     def _get_default_path(self):
         """
-        Return the default path where SUNRGBD is expected to be installed.
+        Return the default path where Sunrgbd is expected to be installed.
         """
         # return os.path.join(cfg.DATA_DIR, 'KITTIVOC')
         return os.path.join(cfg.DATA_DIR,'')
@@ -144,34 +130,34 @@ class sunrgbd(imdb):
 
         This function loads/saves from/to a cache file to speed up future calls.
         """
-        cache_file = os.path.join(self._devkit_path, 'faster_rcnn', 'cache',self.name + '_gt_roidb.pkl')
+        cache_file = os.path.join(self._devkit_path, 'faster_rcnn', 'cache', self.name + '_gt_roidb.pkl')
         # cache_file = os.path.join(self.cache_path, self.name + '_gt_roidb.pkl')
         if os.path.exists(cache_file):
             with open(cache_file, 'rb') as fid:
                 gt_roidb = cPickle.load(fid)
-            print '{} gt roidb loaded from {}'.format(self.name, cache_file)
-            # print "analysing..."
-            # myClassesDict = {}
-            # for img_rois in gt_roidb:
-            #     for cls in img_rois.gt_classes:
-            #         myClassesDict[cls] = myClassesDict.get(cls, 0) + 1
-            # print myClassesDict
-            # print "analysed !"
+            print '{} gt roidb reloaded from {}'.format(self.name, cache_file)
+            print "analysing..."
+            myClassesDict = {}
+            for img_rois in gt_roidb:
+                for cls in img_rois.gt_classes:
+                    myClassesDict[cls] = myClassesDict.get(cls, 0) + 1
+            print myClassesDict
+            print "analysed !"
             return gt_roidb
 
         gt_roidb = [self._load_pascal_annotation(index)
                     for index in self.image_index]
         with open(cache_file, 'wb') as fid:
             cPickle.dump(gt_roidb, fid, cPickle.HIGHEST_PROTOCOL)
-        print 'wrote gt roidb to {}'.format(cache_file)
+        print 'Wrote gt roidb to {} for later use.'.format(cache_file)
 
-        # print "analysing..."
-        # myClassesDict = {}
-        # for img_rois in gt_roidb:
-        #     for cls in img_rois.gt_classes:
-        #         myClassesDict[cls] = myClassesDict.get(cls, 0) + 1
-        # print myClassesDict
-        # print "analysed !"
+        print "analysing..."
+        myClassesDict = {}
+        for img_rois in gt_roidb:
+            for cls in img_rois.gt_classes:
+                myClassesDict[cls] = myClassesDict.get(cls, 0) + 1
+        print myClassesDict
+        print "analysed !"
 
 
 
@@ -204,15 +190,15 @@ class sunrgbd(imdb):
     #
     #     return roidb
 
-    def rpn_roidb(self):
-        if self._image_set != 'test':
-            gt_roidb = self.gt_roidb()
-            rpn_roidb = self._load_rpn_roidb(gt_roidb)
-            roidb = imdb.merge_roidbs(gt_roidb, rpn_roidb)
-        else:
-            roidb = self._load_rpn_roidb(None)
-
-        return roidb
+    # def rpn_roidb(self):
+    #     if self._image_set != 'test':
+    #         gt_roidb = self.gt_roidb()
+    #         rpn_roidb = self._load_rpn_roidb(gt_roidb)
+    #         roidb = imdb.merge_roidbs(gt_roidb, rpn_roidb)
+    #     else:
+    #         roidb = self._load_rpn_roidb(None)
+    #
+    #     return roidb
 
     def _load_rpn_roidb(self, gt_roidb):
         filename = self.config['rpn_file']
@@ -365,10 +351,7 @@ class sunrgbd(imdb):
         annopath = os.path.join(
             self._data_path,
             'Annotations_37', '{:s}.xml')
-        imagesetfile = os.path.join(
-            self._data_path,
-            'sets', 'sunrgbd',
-            self._image_set + '.txt')
+        imagesetfile = os.path.join(self._data_path, 'sets', 'sunrgbd', self._image_set + '.txt')
         cachedir = os.path.join(self._devkit_path, 'faster_rcnn', 'annotations_cache')
         aps = []
         # The PASCAL VOC metric changed in 2010
