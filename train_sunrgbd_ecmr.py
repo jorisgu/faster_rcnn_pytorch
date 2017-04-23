@@ -129,6 +129,8 @@ for step in range(start_step, end_step+1):
     dontcare_areas = blobs['dontcare_areas']
 
     # forward
+    if not len(gt_boxes)>0:
+        continue
     net(im_data, im_info, gt_boxes, gt_ishard, dontcare_areas)
     loss = net.loss + net.rpn.loss
 

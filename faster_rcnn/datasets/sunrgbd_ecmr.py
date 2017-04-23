@@ -136,13 +136,13 @@ class sunrgbd(imdb):
             with open(cache_file, 'rb') as fid:
                 gt_roidb = cPickle.load(fid)
             print '{} gt roidb reloaded from {}'.format(self.name, cache_file)
-            print "analysing..."
-            myClassesDict = {}
-            for img_rois in gt_roidb:
-                for cls in img_rois['gt_classes']:
-                    myClassesDict[self._classes[cls]] = myClassesDict.get(self._classes[cls], 0) + 1
-            print myClassesDict
-            print "analysed !"
+            # print "analysing..."
+            # myClassesDict = {}
+            # for img_rois in gt_roidb:
+            #     for cls in img_rois['gt_classes']:
+            #         myClassesDict[self._classes[cls]] = myClassesDict.get(self._classes[cls], 0) + 1
+            # print myClassesDict
+            # print "analysed !"
             return gt_roidb
 
         gt_roidb = [self._load_pascal_annotation(index)
@@ -151,13 +151,13 @@ class sunrgbd(imdb):
             cPickle.dump(gt_roidb, fid, cPickle.HIGHEST_PROTOCOL)
         print 'Wrote gt roidb to {} for later use.'.format(cache_file)
 
-        print "analysing..."
-        myClassesDict = {}
-        for img_rois in gt_roidb:
-            for cls in img_rois['gt_classes']:
-                myClassesDict[self._classes[cls]] = myClassesDict.get(self._classes[cls], 0) + 1
-        print myClassesDict
-        print "analysed !"
+        # print "analysing..."
+        # myClassesDict = {}
+        # for img_rois in gt_roidb:
+        #     for cls in img_rois['gt_classes']:
+        #         myClassesDict[self._classes[cls]] = myClassesDict.get(self._classes[cls], 0) + 1
+        # print myClassesDict
+        # print "analysed !"
 
 
 
