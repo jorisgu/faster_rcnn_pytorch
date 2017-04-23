@@ -139,7 +139,7 @@ class sunrgbd(imdb):
             print "analysing..."
             myClassesDict = {}
             for img_rois in gt_roidb:
-                for cls in img_rois.gt_classes:
+                for cls in img_rois['gt_classes']:
                     myClassesDict[cls] = myClassesDict.get(cls, 0) + 1
             print myClassesDict
             print "analysed !"
@@ -154,7 +154,7 @@ class sunrgbd(imdb):
         print "analysing..."
         myClassesDict = {}
         for img_rois in gt_roidb:
-            for cls in img_rois.gt_classes:
+            for cls in img_rois['gt_classes']:
                 myClassesDict[cls] = myClassesDict.get(cls, 0) + 1
         print myClassesDict
         print "analysed !"
