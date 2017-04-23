@@ -48,7 +48,7 @@ output_dir = pytorchpath+'models/'+imdb_name+'_noChairs/'
 cfg_file = pytorchpath+'experiments/cfgs/faster_rcnn_end2end_sunrgbd.yml'
 pretrained_model = pytorchpath+'data/pretrained_model/VGG_imagenet.npy'
 start_step = 0
-end_step = 10000
+end_step = 100000
 lr_decay_steps = {60000, 80000}
 lr_decay = 1./10
 
