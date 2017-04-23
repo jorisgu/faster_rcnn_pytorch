@@ -150,7 +150,7 @@ def anchor_target_layer(rpn_cls_score, gt_boxes, gt_ishard, dontcare_areas, im_i
 
     if not cfg.TRAIN.RPN_CLOBBER_POSITIVES:
         # assign bg labels first so that positive labels can clobber them
-        labels[max_overlaps < cfg.TRAIN.RPN_NEGATIVE_OVERLAP] = 0
+        labels[max_overlaps < cfg.TRAIN.RPN_NEGATIVE_OVERLAP] = 0 # 0.3 default
 
     # fg label: for each gt, anchor with highest overlap
     labels[gt_argmax_overlaps] = 1
@@ -162,14 +162,14 @@ def anchor_target_layer(rpn_cls_score, gt_boxes, gt_ishard, dontcare_areas, im_i
         labels[max_overlaps < cfg.TRAIN.RPN_NEGATIVE_OVERLAP] = 0
 
     # preclude dontcare areas
-    if dontcare_areas is not None and dontcare_areas.shape[0] > 0:
-        # intersec shape is D x A
-        intersecs = bbox_intersections(
-            np.ascontiguousarray(dontcare_areas, dtype=np.float),  # D x 4
-            np.ascontiguousarray(anchors, dtype=np.float)  # A x 4
-        )
-        intersecs_ = intersecs.sum(axis=0)  # A x 1
-        labels[intersecs_ > cfg.TRAIN.DONTCARE_AREA_INTERSECTION_HI] = -1
+    # if dontcare_areas is not None and dontcare_areas.shape[0] > 0:
+    #     # intersec shape is D x A
+    #     intersecs = bbox_intersections(
+    #         np.ascontiguousarray(dontcare_areas, dtype=np.float),  # D x 4
+    #         np.ascontiguousarray(anchors, dtype=np.float)  # A x 4
+    #     )
+    #     intersecs_ = intersecs.sum(axis=0)  # A x 1
+    #     labels[intersecs_ > cfg.TRAIN.DONTCARE_AREA_INTERSECTION_HI] = -1
 
     # preclude hard samples that are highly occlusioned, truncated or difficult to see
     if cfg.TRAIN.PRECLUDE_HARD_SAMPLES and gt_ishard is not None and gt_ishard.shape[0] > 0:

@@ -89,6 +89,7 @@ class RPN(nn.Module):
             rpn_cls_score = torch.index_select(rpn_cls_score, 0, rpn_keep)
         except:
             print rpn_cls_score
+            print rpn_cls_score
             print rpn_keep
             exit(0)
         rpn_label = torch.index_select(rpn_label, 0, rpn_keep)
