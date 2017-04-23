@@ -72,7 +72,7 @@ class RPN(nn.Module):
 
         # generating training labels and build the rpn loss
         if self.training:
-            assert gt_boxes is not None
+            assert len(gt_boxes)>0 # is not None
             rpn_data = self.anchor_target_layer(rpn_cls_score, gt_boxes, gt_ishard, dontcare_areas,
                                                 im_info, self._feat_stride, self.anchor_scales)
             self.cross_entropy, self.loss_box = self.build_loss(rpn_cls_score_reshape, rpn_bbox_pred, rpn_data)
