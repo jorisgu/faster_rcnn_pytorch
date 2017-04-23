@@ -35,7 +35,7 @@ class sunrgbd(imdb):
         imdb.__init__(self, 'sunrgbd_' + image_set+'_'+encoding)
         self._image_set = image_set
         self._devkit_path = self._get_default_path() if devkit_path is None else devkit_path
-        self._data_path = self._devkit_path #os.path.join(self._devkit_path,'data')
+        self._data_path = os.path.join(self._devkit_path,'data')
         self.encoding = encoding
         self._classes = ('__background__', # always index 0
                         'cabinet',
