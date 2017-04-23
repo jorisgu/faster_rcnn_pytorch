@@ -85,7 +85,12 @@ class RPN(nn.Module):
         rpn_label = rpn_data[0].view(-1)
 
         rpn_keep = Variable(rpn_label.data.ne(-1).nonzero().squeeze()).cuda()
-        rpn_cls_score = torch.index_select(rpn_cls_score, 0, rpn_keep)
+        try:
+            rpn_cls_score = torch.index_select(rpn_cls_score, 0, rpn_keep)
+        except:
+            print rpn_cls_score
+            print rpn_keep
+            exit(0)
         rpn_label = torch.index_select(rpn_label, 0, rpn_keep)
 
         fg_cnt = torch.sum(rpn_label.data.ne(0))
