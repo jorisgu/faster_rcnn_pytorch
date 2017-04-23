@@ -20,7 +20,7 @@ from ..fast_rcnn.bbox_transform import bbox_transform
 
 # <<<< obsolete
 
-DEBUG = True
+DEBUG = False
 
 
 def anchor_target_layer(rpn_cls_score, gt_boxes, gt_ishard, dontcare_areas, im_info, _feat_stride=[16, ],

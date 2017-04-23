@@ -221,7 +221,7 @@ class FasterRCNN(nn.Module):
 
     def forward(self, im_data, im_info, gt_boxes=None, gt_ishard=None, dontcare_areas=None):
         features, rois = self.rpn(im_data, im_info, gt_boxes, gt_ishard, dontcare_areas)
-        print "size rois fasterrcnn :", rois.size()
+        # print "size rois fasterrcnn :", rois.size()
         if self.training:
             roi_data = self.proposal_target_layer(rois, gt_boxes, gt_ishard, dontcare_areas, self.n_classes)
             rois = roi_data[0]
