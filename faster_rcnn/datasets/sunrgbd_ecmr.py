@@ -38,8 +38,11 @@ class sunrgbd(imdb):
         self._data_path = os.path.join(self._devkit_path,'data')
         self.encoding = encoding
         self._classes = ('__background__', # always index 0
+                         'wall',
+                        'floor',
                         'cabinet',
                         'bed',
+                        'chair',
                         'sofa',
                         'table',
                         'door',
@@ -54,6 +57,9 @@ class sunrgbd(imdb):
                         'dresser',
                         'pillow',
                         'mirror',
+                        'floor_mat',
+                        'clothes',
+                        'ceiling',
                         'books',
                         'fridge',
                         'tv',
