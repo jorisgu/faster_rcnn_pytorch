@@ -30,7 +30,7 @@ pytorchpath = '/home/jguerry/workspace/jg_dl/jg_pyt/'
 imdb_name = 'sunrgbd_test_rgb_i_100_8bits'
 imdb_model = 'sunrgbd_train_rgb_i_100_8bits'
 save_name = imdb_model+'_on_'+imdb_name
-trained_model = pytorchpath+'models/'+imdb_model+'/faster_rcnn_100000.h5'
+trained_model = pytorchpath+'models/'+imdb_model+'_noChairs/faster_rcnn_100000.h5'
 
 
 output_dir = pytorchpath+'output/faster_rcnn_sunrgbd_exp/'
