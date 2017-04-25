@@ -40,16 +40,16 @@ class sunrgbd_13(imdb):
         self._classes = ('__background__', # always index 0
                         'bed',
                         'books',
-                        'ceiling',
+                        #'ceiling',
                         'chair',
-                        'floor',
+                        #'floor',
                         'furniture',
                         'objects',
                         'picture',
                         'sofa',
                         'table',
                         'tv',
-                        'wall',
+                        #'wall',
                         'window',)
         self._class_to_ind = dict(zip(self.classes, xrange(self.num_classes)))
         self._image_ext = '.png'
