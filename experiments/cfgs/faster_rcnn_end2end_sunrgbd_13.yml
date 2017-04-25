@@ -3,7 +3,7 @@ LOG_DIR: faster_rcnn_sunrgbd_exp
 IS_MULTISCALE: False
 NET_NAME: VGGnet
 ANCHOR_SCALES: [8, 16, 32]
-NCLASSES: 38
+NCLASSES: 14
 DATA_DIR: /c16/THESE.JORIS/datasets/SUNRGBD_pv/
 TRAIN:
   OHEM: False

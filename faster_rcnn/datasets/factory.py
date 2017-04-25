@@ -15,6 +15,7 @@ from .pascal_voc import pascal_voc
 from .imagenet3d import imagenet3d
 from .kitti import kitti
 from .sunrgbd_ecmr import sunrgbd
+from .sunrgbd_13 import sunrgbd_13
 from .inout import inout
 from .rgbdp import rgbdp
 from .oneraroom import oneraroom
@@ -53,6 +54,11 @@ for split in ['train', 'test']:
     for encoding in ['rgb_i_100_8bits', 'd_raw_HHA_8bits','d_raw_normal_16bits','d_raw_normal_8bits']:
         name = 'sunrgbd_{}_{}'.format(split,encoding)
         __sets[name] = (lambda split=split, encoding=encoding: sunrgbd(split,encoding))
+# sunrgbd_13
+for split in ['train', 'test']:
+    for encoding in ['rgb_i_100_8bits', 'd_raw_HHA_8bits','d_raw_normal_16bits','d_raw_normal_8bits']:
+        name = 'sunrgbd_13_{}_{}'.format(split,encoding)
+        __sets[name] = (lambda split=split, encoding=encoding: sunrgbd_13(split,encoding))
 
 # # InOut dataset
 for split in ['train', 'test', 'seq0', 'seq1', 'seq2', 'seq3', 'seq01', 'seq02', 'seq12', 'jg_train', 'jg_test']:

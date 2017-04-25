@@ -1,3 +1,5 @@
+print "Starting script..."
+import operator
 import os
 import torch
 import numpy as np
@@ -17,11 +19,7 @@ try:
 except ImportError:
     cprint = None
 
-try:
-    from pycrayon import CrayonClient
-except ImportError:
-    1
-CrayonClient = None
+
 
 
 def log_print(text, color=None, on_color=None, attrs=None):
@@ -30,38 +28,22 @@ def log_print(text, color=None, on_color=None, attrs=None):
     else:
         print(text)
 
+print "Loading configuration..."
 
+pytorchpath = os.environ['PWD']+'/'
 
 # hyper-parameters
 # ------------
-
-pytorchpath = os.environ['PWD']+'/'
-# print pytorchpath
-# exit()
-# pytorchpath = '/data02/jguerry/jg_pyt/'
-# pytorchpath = '/home/jguerry/workspace/jg_dl/jg_pyt/'
-
-
 imdb_name = 'sunrgbd_train_rgb_i_100_8bits'
 output_dir = pytorchpath+'models/'+imdb_name+'_noChairs/'
 
 cfg_file = pytorchpath+'experiments/cfgs/faster_rcnn_end2end_sunrgbd.yml'
-pretrained_model = pytorchpath+'data/pretrained_model/VGG_imagenet.npy'
-start_step = 0
-end_step = 100000
-lr_decay_steps = {60000, 80000}
-lr_decay = 1./10
 
-rand_seed = 1024
 _DEBUG = True
-use_tensorboard = True
-remove_all_log = False   # remove all historical experiments in TensorBoard
-exp_name = None # the previous experiment name in TensorBoard
 
 # ------------
 
-if rand_seed is not None:
-    np.random.seed(rand_seed)
+
 
 # load config
 cfg_from_file(cfg_file)
@@ -72,23 +54,45 @@ disp_interval = cfg.TRAIN.DISPLAY
 log_interval = cfg.TRAIN.LOG_IMAGE_ITERS
 
 # load data
+print "Loading imdb..."
 imdb = get_imdb(imdb_name)
 rdl_roidb.prepare_roidb(imdb)
 roidb = imdb.roidb
 data_layer = RoIDataLayer(roidb, imdb.num_classes)
 
 # load net
+print "Creating net..."
 net = FasterRCNN(classes=imdb.classes, debug=_DEBUG)
 network.weights_normal_init(net, dev=0.01)
-network.load_pretrained_npy(net, pretrained_model)
+
+print "Loading weight..."
+# pretrained_model = pytorchpath+'data/pretrained_model/VGG_imagenet.npy'
+# network.load_pretrained_npy(net, pretrained_model)
 # model_file = '/media/longc/Data/models/VGGnet_fast_rcnn_iter_70000.h5'
 # model_file = 'models/saved_model3/faster_rcnn_60000.h5'
-# network.load_net(model_file, net)
+model_file = '/home/jguerry/workspace/jg_dl/jg_pyt/models/sunrgbd_train_rgb_i_100_8bits/faster_rcnn_200000.h5'
+network.load_net(model_file, net)
+
+print "Configuring parameters..."
 # exp_name = 'vgg16_02-19_13-24'
-# start_step = 60001
-# lr /= 10.
+start_step = 200000
+end_step = 400000
+lr_decay_steps = {220000, 240000, 260000, 280000, 300000, 350000}
+lr_decay = 1./10
+rand_seed = 1024
+lr = 0.0001
 # network.weights_normal_init([net.bbox_fc, net.score_fc, net.fc6, net.fc7], dev=0.01)
 
+
+disp_interval = 1000
+save_interval = 20000
+
+
+
+
+
+if rand_seed is not None:
+    np.random.seed(rand_seed)
 net.cuda()
 net.train()
 
@@ -99,17 +103,7 @@ optimizer = torch.optim.SGD(params[8:], lr=lr, momentum=momentum, weight_decay=w
 if not os.path.exists(output_dir):
     os.mkdir(output_dir)
 
-# tensorboad
-use_tensorboard = use_tensorboard and CrayonClient is not None
-if use_tensorboard:
-    cc = CrayonClient(hostname='127.0.0.1')
-    if remove_all_log:
-        cc.remove_all_experiments()
-    if exp_name is None:
-        exp_name = datetime.now().strftime('vgg16_%m-%d_%H-%M')
-        exp = cc.create_experiment(exp_name)
-    else:
-        exp = cc.open_experiment(exp_name)
+
 
 # training
 train_loss = 0
@@ -118,7 +112,10 @@ step_cnt = 0
 re_cnt = False
 t = Timer()
 t.tic()
-for step in range(start_step, end_step+1):
+
+print "Start training..."
+myClassesDict = {}
+for step in range(start_step+1, end_step+1):
 
     # get one batch
     blobs = data_layer.forward()
@@ -129,9 +126,25 @@ for step in range(start_step, end_step+1):
     dontcare_areas = blobs['dontcare_areas']
     dontcare_areas = None
 
+    indices = []
+    for id_gt,gt in enumerate(gt_boxes):
+        ranks = {key: rank for rank, key in enumerate(sorted(myClassesDict, key=myClassesDict.get, reverse=True), 1)}
+        cls=int(gt[4])
+        if imdb._classes[cls] not in myClassesDict.keys():
+            indices.append(id_gt)
+            myClassesDict[imdb._classes[cls]] = myClassesDict.get(imdb._classes[cls], 0) + 1
+        elif ranks[imdb._classes[cls]]>0.5*len(myClassesDict):
+            indices.append(id_gt)
+            myClassesDict[imdb._classes[cls]] = myClassesDict.get(imdb._classes[cls], 0) + 1
+        else:
+            pass
+    gt_boxes = gt_boxes[indices,:]
+    gt_ishard = gt_ishard[indices]
     # forward
     if not len(gt_boxes)>0:
         continue
+
+    # forward
     net(im_data, im_info, gt_boxes, gt_ishard, dontcare_areas)
     loss = net.loss + net.rpn.loss
 
@@ -166,19 +179,10 @@ for step in range(start_step, end_step+1):
             )
         re_cnt = True
 
-    if use_tensorboard and step % log_interval == 0:
-        exp.add_scalar_value('train_loss', train_loss / step_cnt, step=step)
-        exp.add_scalar_value('learning_rate', lr, step=step)
-        if _DEBUG:
-            exp.add_scalar_value('true_positive', tp/fg*100., step=step)
-            exp.add_scalar_value('true_negative', tf/bg*100., step=step)
-            losses = {'rpn_cls': float(net.rpn.cross_entropy.data.cpu().numpy()[0]),
-                      'rpn_box': float(net.rpn.loss_box.data.cpu().numpy()[0]),
-                      'rcnn_cls': float(net.cross_entropy.data.cpu().numpy()[0]),
-                      'rcnn_box': float(net.loss_box.data.cpu().numpy()[0])}
-            exp.add_scalar_dict(losses, step=step)
+        myClasses_sorted = sorted(myClassesDict.items(), key=operator.itemgetter(1),reverse=True)
+        print myClasses_sorted
 
-    if (step % 10000 == 0) and step > 0:
+    if (step % save_interval == 0) and step > 0:
         save_name = os.path.join(output_dir, 'faster_rcnn_{}.h5'.format(step))
         network.save_net(save_name, net)
         print('save model: {}'.format(save_name))
@@ -192,3 +196,9 @@ for step in range(start_step, end_step+1):
         step_cnt = 0
         t.tic()
         re_cnt = False
+
+print "Training finished..."
+
+
+myClasses_sorted = sorted(myClassesDict.items(), key=operator.itemgetter(1),reverse=True)
+print myClasses_sorted

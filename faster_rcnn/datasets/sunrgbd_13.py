@@ -30,7 +30,7 @@ from ..fast_rcnn.config import cfg
 # <<<< obsolete
 
 
-class sunrgbd(imdb):
+class sunrgbd_13(imdb):
     def __init__(self, image_set, encoding, devkit_path=None):
         imdb.__init__(self, 'sunrgbd_' + image_set+'_'+encoding)
         self._image_set = image_set
@@ -38,43 +38,19 @@ class sunrgbd(imdb):
         self._data_path = os.path.join(self._devkit_path,'data')
         self.encoding = encoding
         self._classes = ('__background__', # always index 0
-                        #  'wall',
-                        # 'floor',
-                        'cabinet',
                         'bed',
+                        'books',
+                        'ceiling',
                         'chair',
+                        'floor',
+                        'furniture',
+                        'objects',
+                        'picture',
                         'sofa',
                         'table',
-                        'door',
-                        'window',
-                        'bookshelf',
-                        'picture',
-                        'counter',
-                        'blinds',
-                        'desk',
-                        'shelves',
-                        'curtain',
-                        'dresser',
-                        'pillow',
-                        'mirror',
-                        'floor_mat',
-                        'clothes',
-                        # 'ceiling',
-                        'books',
-                        'fridge',
                         'tv',
-                        'paper',
-                        'towel',
-                        'shower_curtain',
-                        'box',
-                        'whiteboard',
-                        'person',
-                        'night_stand',
-                        'toilet',
-                        'sink',
-                        'lamp',
-                        'bathtub',
-                        'bag',)
+                        'wall',
+                        'window',)
         self._class_to_ind = dict(zip(self.classes, xrange(self.num_classes)))
         self._image_ext = '.png'
         self._image_index = self._load_image_set_index()
@@ -240,7 +216,7 @@ class sunrgbd(imdb):
         nb_removed = 0
         for i in range(len(self._image_index)-1, -1, -1):
             index = self._image_index[i]
-            filename = os.path.join(self._data_path, 'Annotations_37', index + '.xml')
+            filename = os.path.join(self._data_path, 'Annotations_13', index + '.xml')
             tree = ET.parse(filename)
             objs = tree.findall('object')
             non_diff_objs = [obj for obj in objs if int(obj.find('difficult').text) == 0 and obj.find('name').text.lower().strip() != 'dontcare']
@@ -256,7 +232,7 @@ class sunrgbd(imdb):
         Load image and bounding boxes info from XML file in the PASCAL VOC
         format.
         """
-        filename = os.path.join(self._data_path, 'Annotations_37', index + '.xml')
+        filename = os.path.join(self._data_path, 'Annotations_13', index + '.xml')
         tree = ET.parse(filename)
         objs = tree.findall('object')
         # if not self.config['use_diff']:
@@ -356,7 +332,7 @@ class sunrgbd(imdb):
     def _do_python_eval(self, output_dir = 'output'):
         annopath = os.path.join(
             self._data_path,
-            'Annotations_37', '{:s}.xml')
+            'Annotations_13', '{:s}.xml')
         imagesetfile = os.path.join(self._data_path, 'sets', 'sunrgbd', self._image_set + '.txt')
         cachedir = os.path.join(self._devkit_path, 'faster_rcnn', 'annotations_cache')
         aps = []
@@ -424,8 +400,3 @@ class sunrgbd(imdb):
         else:
             self.config['use_salt'] = True
             self.config['cleanup'] = True
-
-if __name__ == '__main__':
-    d = sunrgbd('train')
-    res = d.roidb
-    from IPython import embed; embed()
