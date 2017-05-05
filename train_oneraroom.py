@@ -1,3 +1,5 @@
+print "Starting script..."
+import operator
 import os
 import torch
 import numpy as np
@@ -17,23 +19,13 @@ try:
 except ImportError:
     cprint = None
 
-try:
-    from pycrayon import CrayonClient
-except ImportError:
-    1
-CrayonClient = None
-
-
 def log_print(text, color=None, on_color=None, attrs=None):
     if cprint is not None:
         cprint(text, color=color, on_color=on_color, attrs=attrs)
     else:
         print(text)
 
-
-
-# hyper-parameters
-# ------------
+print "Loading configuration..."
 
 pytorchpath = os.environ['PWD']+'/'
 # print pytorchpath
