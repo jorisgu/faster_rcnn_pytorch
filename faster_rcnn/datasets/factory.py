@@ -43,11 +43,11 @@ for year in ['2007', '2012', '0712']:
                         pascal_voc(split, year))
 
 
-    # Set up kittivoc
-    for split in ['train', 'val', 'trainval', 'test']:
-        name = 'kittivoc_{}'.format(split)
-        # print name
-        __sets[name] = (lambda split=split: kittivoc(split))
+# Set up kittivoc
+for split in ['train', 'val', 'trainval', 'test']:
+    name = 'kittivoc_{}'.format(split)
+    # print name
+    __sets[name] = (lambda split=split: kittivoc(split))
 
 # # SUNRGBD dataset
 for split in ['train', 'test']:
@@ -67,7 +67,7 @@ for split in ['train', 'test', 'seq0', 'seq1', 'seq2', 'seq3', 'seq01', 'seq02',
         __sets[name] = (lambda split=split, encoding=encoding: inout(split,encoding))
 
 # # oneraroom dataset
-for split in ['all','nb','easy','average','hard']:
+for split in ['all', 'easy','average','hard', 'or_2017', 'static','sar']:
     for encoding in ['rgb', 'depth_8bits']:
         name = 'oneraroom_{}_{}'.format(split,encoding)
         __sets[name] = (lambda split=split, encoding=encoding: oneraroom(split,encoding))

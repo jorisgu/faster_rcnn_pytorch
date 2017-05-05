@@ -70,21 +70,23 @@ pretrained_model = pytorchpath+'data/pretrained_model/VGG_imagenet.npy'
 network.load_pretrained_npy(net, pretrained_model)
 # model_file = '/media/longc/Data/models/VGGnet_fast_rcnn_iter_70000.h5'
 # model_file = 'models/saved_model3/faster_rcnn_60000.h5'
-# model_file = '/home/jguerry/workspace/jg_dl/jg_pyt/models/sunrgbd_train_rgb_i_100_8bits/faster_rcnn_200000.h5'
+# model_file = '/home/jguerry/workspace/jg_dl/jg_pyt/models/sunrgbd_13_train_rgb_i_100_8bits/faster_rcnn_200000.h5'
 # network.load_net(model_file, net)
 
 print "Configuring parameters..."
 # exp_name = 'vgg16_02-19_13-24'
 start_step = 0
+# start_step = 200000
 end_step = 400000
 lr_decay_steps = {100000, 150000, 200000, 300000, 350000}
 lr_decay = 1./10
 rand_seed = None #1024
-lr = 0.0001
+# lr = 0.0001
+lr = 0.00001
 # network.weights_normal_init([net.bbox_fc, net.score_fc, net.fc6, net.fc7], dev=0.01)
 
 
-disp_interval = 1000
+disp_interval = 200
 save_interval = 25000
 
 
@@ -126,57 +128,67 @@ for step in range(start_step+1, end_step+1):
     dontcare_areas = blobs['dontcare_areas']
     dontcare_areas = None
 
-    indices = []
+
     for id_gt,gt in enumerate(gt_boxes):
-        ranks = {key: rank for rank, key in enumerate(sorted(myClassesDict, key=myClassesDict.get, reverse=True), 1)}
         cls=int(gt[4])
-        if imdb._classes[cls] not in myClassesDict.keys():
-            indices.append(id_gt)
-            myClassesDict[imdb._classes[cls]] = myClassesDict.get(imdb._classes[cls], 0) + 1
-        elif ranks[imdb._classes[cls]]>0.5*len(myClassesDict):
-            indices.append(id_gt)
-            myClassesDict[imdb._classes[cls]] = myClassesDict.get(imdb._classes[cls], 0) + 1
-        else:
-            pass
-    gt_boxes = gt_boxes[indices,:]
-    gt_ishard = gt_ishard[indices]
-    # forward
-    if not len(gt_boxes)>0:
-        continue
+        myClassesDict[imdb._classes[cls]] = myClassesDict.get(imdb._classes[cls], 0) + 1
 
-    # forward
-    net(im_data, im_info, gt_boxes, gt_ishard, dontcare_areas)
-    loss = net.loss + net.rpn.loss
 
-    if _DEBUG:
-        tp += float(net.tp)
-        tf += float(net.tf)
-        fg += net.fg_cnt
-        bg += net.bg_cnt
+    # indices = []
+    # for id_gt,gt in enumerate(gt_boxes):
+    #     ranks = {key: rank for rank, key in enumerate(sorted(myClassesDict, key=myClassesDict.get, reverse=True), 1)}
+    #     cls=int(gt[4])
+    #     if imdb._classes[cls] not in myClassesDict.keys():
+    #         indices.append(id_gt)
+    #         myClassesDict[imdb._classes[cls]] = myClassesDict.get(imdb._classes[cls], 0) + 1
+    #     elif ranks[imdb._classes[cls]]>0.5*len(myClassesDict):
+    #         indices.append(id_gt)
+    #         myClassesDict[imdb._classes[cls]] = myClassesDict.get(imdb._classes[cls], 0) + 1
+    #     else:
+    #         pass
+    # gt_boxes = gt_boxes[indices,:]
+    # gt_ishard = gt_ishard[indices]
 
-    train_loss += loss.data[0]
-    step_cnt += 1
 
-    # backward
-    optimizer.zero_grad()
-    loss.backward()
-    network.clip_gradient(net, 10.)
-    optimizer.step()
 
-    if step % disp_interval == 0:
+    #forward
+    if len(gt_boxes)>0:
+
+
+        # forward
+        net(im_data, im_info, gt_boxes, gt_ishard, dontcare_areas)
+        loss = net.loss + net.rpn.loss
+
+        if _DEBUG:
+            tp += float(net.tp)
+            tf += float(net.tf)
+            fg += net.fg_cnt
+            bg += net.bg_cnt
+
+        train_loss += loss.data[0]
+        step_cnt += 1
+
+        # backward
+        optimizer.zero_grad()
+        loss.backward()
+        network.clip_gradient(net, 10.)
+        optimizer.step()
+
+    if step_cnt % disp_interval == 0:
         duration = t.toc(average=False)
         fps = step_cnt / duration
 
-        log_text = 'step %d, image: %s, loss: %.4f, fps: %.2f (%.2fs per batch)' % (
-            step, blobs['im_name'], train_loss / step_cnt, fps, 1./fps)
+        log_text = 'step %d, loss: %.4f, fps: %.2f (%.2fs per batch)' % (step, train_loss / step_cnt, fps, 1./fps)
         log_print(log_text, color='green', attrs=['bold'])
 
         if _DEBUG:
-            log_print('\tTP: %.2f%%, TF: %.2f%%, fg/bg=(%d/%d)' % (tp/fg*100., tf/bg*100., fg/step_cnt, bg/step_cnt), color='red')
-            log_print('\trpn_cls: %.4f, rpn_box: %.4f, rcnn_cls: %.4f, rcnn_box: %.4f' % (
+            log_text = '\tTP: %.2f%%, TF: %.2f%%, fg/bg=(%d/%d)' % (tp/fg*100., tf/bg*100., fg, bg)
+            # log_text = '\tTP: %.2f%%, TF: %.2f%%, fg/bg=(%d/%d)' % (tp/fg*100., tf/bg*100., fg/step_cnt, bg/step_cnt)
+            log_print(log_text, color='red')
+            log_text = '\trpn_cls: %.4f, rpn_box: %.4f, rcnn_cls: %.4f, rcnn_box: %.4f' % (
                 net.rpn.cross_entropy.data.cpu().numpy()[0], net.rpn.loss_box.data.cpu().numpy()[0],
                 net.cross_entropy.data.cpu().numpy()[0], net.loss_box.data.cpu().numpy()[0])
-            )
+            log_print(log_text, color='blue')
         re_cnt = True
 
         myClasses_sorted = sorted(myClassesDict.items(), key=operator.itemgetter(1),reverse=True)
@@ -184,7 +196,7 @@ for step in range(start_step+1, end_step+1):
     if (step % save_interval == 0) and step > 0:
         save_name = os.path.join(output_dir, 'faster_rcnn_{}.h5'.format(step))
         network.save_net(save_name, net)
-        print('save model: {}'.format(save_name))
+        log_print('save model: {}'.format(save_name),attrs=['bold','underline'])
     if step in lr_decay_steps:
         lr *= lr_decay
         print "LR :",lr

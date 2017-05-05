@@ -114,19 +114,19 @@ class sunrgbd_13(imdb):
         """
         cache_file = os.path.join(self._devkit_path, 'faster_rcnn', 'cache', self.name + '_gt_roidb.pkl')
         # cache_file = os.path.join(self.cache_path, self.name + '_gt_roidb.pkl')
-        if os.path.exists(cache_file):
-            with open(cache_file, 'rb') as fid:
-                gt_roidb = cPickle.load(fid)
-            print '{} gt roidb reloaded from {}'.format(self.name, cache_file)
-            # print "analysing..."
-            # myClassesDict = {}
-            # for img_rois in gt_roidb:
-            #     for cls in img_rois['gt_classes']:
-            #         myClassesDict[self._classes[cls]] = myClassesDict.get(self._classes[cls], 0) + 1
-            # print myClassesDict
-            # print "analysed !"
-            return gt_roidb
-
+        # if os.path.exists(cache_file):
+        #     with open(cache_file, 'rb') as fid:
+        #         gt_roidb = cPickle.load(fid)
+        #     print '{} gt roidb reloaded from {}'.format(self.name, cache_file)
+        #     # print "analysing..."
+        #     # myClassesDict = {}
+        #     # for img_rois in gt_roidb:
+        #     #     for cls in img_rois['gt_classes']:
+        #     #         myClassesDict[self._classes[cls]] = myClassesDict.get(self._classes[cls], 0) + 1
+        #     # print myClassesDict
+        #     # print "analysed !"
+        #     return gt_roidb
+        print 'Reading pascal annotation files.'
         gt_roidb = [self._load_pascal_annotation(index)
                     for index in self.image_index]
         with open(cache_file, 'wb') as fid:
