@@ -279,7 +279,7 @@ def voc_eval_ecmr(detpath,
     img_relative_tp = {}
     img_relative_fp = {}
     img_relative_d = {}
-    new_all_boxes = [[] for __ in imagenames]
+    new_all_boxes = {}
 
 
     npos = 0
@@ -295,6 +295,7 @@ def voc_eval_ecmr(detpath,
         img_relative_tp[imagename] = 0
         img_relative_fp[imagename] = 0
         img_relative_d[imagename] = 0
+        new_all_boxes[imagename]=[]
 
     # read dets
     detfile = detpath.format(classname)
@@ -361,7 +362,7 @@ def voc_eval_ecmr(detpath,
             else:
                 fp[d] = 1.
                 img_relative_fp[image_ids[d]]+=1
-            print [image_ids[d],confidence[d],BB[d],detection_success[d]]
+            new_all_boxes[image_ids[d]].append([confidence[d],BB[d],detection_success[d]])
         # compute precision recall
         cumfp = np.cumsum(fp)
         cumtp = np.cumsum(tp)
