@@ -279,6 +279,7 @@ def voc_eval_ecmr(detpath,
     img_relative_tp = {}
     img_relative_fp = {}
     img_relative_d = {}
+    print imagenames
     new_all_boxes = [[] for __ in imagenames]
 
 
