@@ -276,6 +276,7 @@ def voc_eval_ecmr(detpath,
     img_relative_tp = {}
     img_relative_fp = {}
     img_relative_d = {}
+
     npos = 0
     for imagename in imagenames:
         R = [obj for obj in recs[imagename] if obj['name'] == classname]
@@ -300,10 +301,11 @@ def voc_eval_ecmr(detpath,
         image_ids = [x[0] for x in splitlines]
         confidence = np.array([float(x[1]) for x in splitlines])
         BB = np.array([[float(z) for z in x[2:]] for x in splitlines])
+        detection_success = [0 for x in splitlines]
 
         # sort by confidence
         sorted_ind = np.argsort(-confidence)
-        sorted_scores = np.sort(-confidence)
+        # sorted_scores = np.sort(-confidence)
         BB = BB[sorted_ind, :]
         image_ids = [image_ids[x] for x in sorted_ind]
 
@@ -346,6 +348,7 @@ def voc_eval_ecmr(detpath,
                         R['det'][jmax] = 1
                         img_relative_tp[image_ids[d]]+=1
                         iou[d]=ovmax
+                        detection_success[sorted_ind[d]]=1
                     else:
                         fp[d] = 1.
                         img_relative_fp[image_ids[d]]+=1
@@ -368,7 +371,8 @@ def voc_eval_ecmr(detpath,
          tp = 0
          fp = 0
          iou = 0
+         detection_success = []
 
 
 
-    return rec, prec, ap, tp, fp, iou, npos, img_relative_tp, img_relative_fp, img_relative_d
+    return rec, prec, ap, tp, fp, iou, npos, img_relative_tp, img_relative_fp, img_relative_d, detection_success

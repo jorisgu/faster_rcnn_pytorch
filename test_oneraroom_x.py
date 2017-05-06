@@ -50,7 +50,7 @@ cfg_file = pytorchpath+'experiments/cfgs/faster_rcnn_end2end_oneraroom.yml'
 rand_seed = 1024
 
 max_per_image = 300
-thresh = 0.05
+thresh = 0.5
 vis = True
 sav = True
 
