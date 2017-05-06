@@ -308,6 +308,7 @@ def voc_eval_ecmr(detpath,
         BB = np.array([[float(z) for z in x[2:]] for x in splitlines])
         detection_success = [0 for x in splitlines]
 
+
         # sort by confidence
         sorted_ind = np.argsort(-confidence)
         sorted_scores = np.sort(-confidence)
@@ -354,16 +355,13 @@ def voc_eval_ecmr(detpath,
                         img_relative_tp[image_ids[d]]+=1
                         iou[d]=ovmax
                         detection_success[sorted_ind[d]]=1
-                        new_all_boxes[image_ids[d]].append(bb+[1]+[sorted_scores[d]])
                     else:
                         fp[d] = 1.
                         img_relative_fp[image_ids[d]]+=1
-                        new_all_boxes[image_ids[d]].append(bb+[0]+[sorted_scores[d]])
             else:
                 fp[d] = 1.
                 img_relative_fp[image_ids[d]]+=1
-                new_all_boxes[image_ids[d]].append(bb+[0]+[sorted_scores[d]])
-
+            print image_ids[d]+confidence[d]+BB[d]+detection_success[d]
         # compute precision recall
         cumfp = np.cumsum(fp)
         cumtp = np.cumsum(tp)
