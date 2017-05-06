@@ -275,6 +275,7 @@ def voc_eval_ecmr(detpath,
     class_recs = {}
     img_relative_tp = {}
     img_relative_fp = {}
+    img_relative_d = {}
     npos = 0
     for imagename in imagenames:
         R = [obj for obj in recs[imagename] if obj['name'] == classname]
@@ -287,6 +288,7 @@ def voc_eval_ecmr(detpath,
                                  'det': det}
         img_relative_tp[imagename] = 0
         img_relative_fp[imagename] = 0
+        img_relative_d[imagename] = 0
 
     # read dets
     detfile = detpath.format(classname)
@@ -311,6 +313,7 @@ def voc_eval_ecmr(detpath,
         fp = np.zeros(nd)
         iou = np.zeros(nd,dtype=np.float32)
         for d in range(nd):
+            img_relative_d[image_ids[d]]+=1
             R = class_recs[image_ids[d]]
             bb = BB[d, :].astype(float)
             ovmax = -np.inf
@@ -368,4 +371,4 @@ def voc_eval_ecmr(detpath,
 
 
 
-    return rec, prec, ap, tp, fp, iou, npos, img_relative_tp, img_relative_fp
+    return rec, prec, ap, tp, fp, iou, npos, img_relative_tp, img_relative_fp, img_relative_d
