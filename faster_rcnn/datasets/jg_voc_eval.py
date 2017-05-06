@@ -351,7 +351,7 @@ def voc_eval_ecmr(detpath,
                         img_relative_fp[image_ids[d]]+=1
             else:
                 fp[d] = 1.
-                img_relative_fp[image_ids[d]]+=1
+                # img_relative_fp[image_ids[d]]+=1
 
         # compute precision recall
         cumfp = np.cumsum(fp)
