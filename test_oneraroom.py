@@ -29,6 +29,7 @@ pytorchpath = '/home/jguerry/workspace/jg_dl/jg_pyt/'
 
 
 for enc in ['rgb','depth_8bits']:
+    print enc
     imdb_name = 'oneraroom_static_monotonous_'+enc
     imdb_model = 'oneraroom_2017_no_static_'+enc
 
@@ -51,7 +52,7 @@ for enc in ['rgb','depth_8bits']:
 
 
     max_per_image = 300
-    thresh = 0.05
+    thresh = 0.5
     vis = True
     sav = True
 
