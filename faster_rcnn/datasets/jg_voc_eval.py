@@ -257,6 +257,9 @@ def voc_eval_ecmr(detpath,
 
     # if not os.path.isfile(cachefile):
     # load annots
+
+
+
     recs = {}
     for i, imagename in enumerate(imagenames):
         recs[imagename] = parse_rec(annopath.format(imagename))
@@ -276,6 +279,7 @@ def voc_eval_ecmr(detpath,
     img_relative_tp = {}
     img_relative_fp = {}
     img_relative_d = {}
+    new_all_boxes = [[] for _ in len(imagenames)]
 
     npos = 0
     for imagename in imagenames:
@@ -305,7 +309,7 @@ def voc_eval_ecmr(detpath,
 
         # sort by confidence
         sorted_ind = np.argsort(-confidence)
-        # sorted_scores = np.sort(-confidence)
+        sorted_scores = np.sort(-confidence)
         BB = BB[sorted_ind, :]
         image_ids = [image_ids[x] for x in sorted_ind]
 
@@ -349,12 +353,15 @@ def voc_eval_ecmr(detpath,
                         img_relative_tp[image_ids[d]]+=1
                         iou[d]=ovmax
                         detection_success[sorted_ind[d]]=1
+                        new_all_boxes[image_ids[d]].append(bb+[1]+[sorted_scores[d]])
                     else:
                         fp[d] = 1.
                         img_relative_fp[image_ids[d]]+=1
+                        new_all_boxes[image_ids[d]].append(bb+[0]+[sorted_scores[d]])
             else:
                 fp[d] = 1.
                 img_relative_fp[image_ids[d]]+=1
+                new_all_boxes[image_ids[d]].append(bb+[0]+[sorted_scores[d]])
 
         # compute precision recall
         cumfp = np.cumsum(fp)
@@ -375,4 +382,4 @@ def voc_eval_ecmr(detpath,
 
 
 
-    return rec, prec, ap, tp, fp, iou, npos, img_relative_tp, img_relative_fp, img_relative_d, detection_success
+    return rec, prec, ap, tp, fp, iou, npos, img_relative_tp, img_relative_fp, img_relative_d, new_all_boxes
