@@ -361,7 +361,7 @@ def voc_eval_ecmr(detpath,
             else:
                 fp[d] = 1.
                 img_relative_fp[image_ids[d]]+=1
-            print image_ids[d]+confidence[d]+BB[d]+detection_success[d]
+            print [image_ids[d],confidence[d],BB[d],detection_success[d]]
         # compute precision recall
         cumfp = np.cumsum(fp)
         cumtp = np.cumsum(tp)
