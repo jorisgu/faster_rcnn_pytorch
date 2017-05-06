@@ -279,8 +279,7 @@ def voc_eval_ecmr(detpath,
     img_relative_tp = {}
     img_relative_fp = {}
     img_relative_d = {}
-    print imagenames
-    new_all_boxes = [[] for __ in imagenames]
+    new_all_boxes = {}
 
 
     npos = 0
@@ -296,7 +295,7 @@ def voc_eval_ecmr(detpath,
         img_relative_tp[imagename] = 0
         img_relative_fp[imagename] = 0
         img_relative_d[imagename] = 0
-
+        new_all_boxes[imagename]=[]
     # read dets
     detfile = detpath.format(classname)
     with open(detfile, 'r') as f:
