@@ -281,7 +281,6 @@ def voc_eval_ecmr(detpath,
     img_relative_d = {}
     new_all_boxes = {}
 
-
     npos = 0
     for imagename in imagenames:
         R = [obj for obj in recs[imagename] if obj['name'] == classname]
