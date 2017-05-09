@@ -152,7 +152,7 @@ def test_net_x(net_x, imdb_0, imdb_1, max_per_image=300, thresh=0.05, vis=False)
             x2_0=int(np.round(boxes_0[k,2]))
             y2_0=int(np.round(boxes_0[k,3]))
             im_0[y1_0:y2_0,x1_0:x2_0,:] = 0*im_0[y1_0:y2_0,x1_0:x2_0,:]
-            break
+            # break
 
 
         keep_tresh_1=np.zeros((boxes_1.shape[0],1))
