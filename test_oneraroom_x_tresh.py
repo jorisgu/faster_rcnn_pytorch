@@ -153,6 +153,16 @@ def test_net_x(net_x, imdb_0, imdb_1, max_per_image=300, thresh=0.05, vis=False)
             y2_0=int(np.round(boxes_0[k,3]))
             im_0[y1_0:y2_0,x1_0:x2_0,:] = 0*im_0[y1_0:y2_0,x1_0:x2_0,:]
             break
+
+
+        keep_tresh_1=np.zeros((boxes_1.shape[0],1))
+        for k in range(boxes_0.shape[0]):
+            x1_1=int(np.round(boxes_1[k,0]))
+            y1_1=int(np.round(boxes_1[k,1]))
+            x2_1=int(np.round(boxes_1[k,2]))
+            y2_1=int(np.round(boxes_1[k,3]))
+            im_1[y1_1:y2_1,x1_1:x2_1,:] = 0*im_1[y1_1:y2_1,x1_1:x2_1,0:2]
+            break
             # extractedbox = im_0[x1_0:x2_0,y1_0:y2_0]
             # extractedbox = 0*extractedbox
             #compute mean of extractedbox
