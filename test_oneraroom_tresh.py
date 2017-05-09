@@ -132,14 +132,7 @@ for enc in ['rgb']:#,'depth_8bits']:
             scores, boxes = im_detect(net, im)
             detect_time = _t['im_detect'].toc(average=False)
 
-            keep_tresh_0=np.zeros((boxes.shape[0],1))
-            for k in range(boxes.shape[0]):
-                x1_0=int(np.round(boxes[k,0]))
-                y1_0=int(np.round(boxes[k,1]))
-                x2_0=int(np.round(boxes[k,2]))
-                y2_0=int(np.round(boxes[k,3]))
-                im[y1_0:y2_0,x1_0:x2_0,0:2] = 0*im[y1_0:y2_0,x1_0:x2_0,0:2]
-                # break
+
 
             _t['misc'].tic()
             if vis or sav:
@@ -155,6 +148,16 @@ for enc in ['rgb']:#,'depth_8bits']:
                     .astype(np.float32, copy=False)
                 keep = nms(cls_dets, cfg.TEST.NMS)
                 cls_dets = cls_dets[keep, :]
+
+                keep_tresh_0=np.zeros((boxes.shape[0],1))
+                for k in range(cls_dets.shape[0]):
+                    x1_0=int(np.round(cls_dets[k,0]))
+                    y1_0=int(np.round(cls_dets[k,1]))
+                    x2_0=int(np.round(cls_dets[k,2]))
+                    y2_0=int(np.round(cls_dets[k,3]))
+                    im2show[y1_0:y2_0,x1_0:x2_0,0:2] = 0*im2show[y1_0:y2_0,x1_0:x2_0,0:2]
+                    # break
+
                 if vis:
                     im2show = vis_detections(im2show, imdb.classes[j], cls_dets)
                 all_boxes[j][i] = cls_dets
