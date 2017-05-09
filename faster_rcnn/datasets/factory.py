@@ -67,7 +67,7 @@ for split in ['train', 'test', 'seq0', 'seq1', 'seq2', 'seq3', 'seq01', 'seq02',
         __sets[name] = (lambda split=split, encoding=encoding: inout(split,encoding))
 
 # # oneraroom dataset
-for split in ['all', 'easy','average','hard', 'or_2017', 'static','sar','static_monotonous','no2017','2017_no_static']:
+for split in ['all', 'easy','average','hard', 'or_2017', 'static','sar','static_monotonous','no2017','2017_no_static','2017_no_parking','2017_parking']:
     for encoding in ['rgb', 'depth_8bits']:
         name = 'oneraroom_{}_{}'.format(split,encoding)
         __sets[name] = (lambda split=split, encoding=encoding: oneraroom(split,encoding))

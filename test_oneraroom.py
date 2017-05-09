@@ -30,8 +30,8 @@ pytorchpath = '/home/jguerry/workspace/jg_dl/jg_pyt/'
 
 for enc in ['rgb','depth_8bits']:
     print enc
-    imdb_name = 'oneraroom_static_monotonous_'+enc
-    imdb_model = 'oneraroom_2017_no_static_'+enc
+    imdb_name = 'oneraroom_2017_parking_'+enc
+    imdb_model = 'oneraroom_2017_no_parking_'+enc
 
     save_name = imdb_model+'_on_'+imdb_name
     trained_model = pytorchpath+'models/'+imdb_model+'/faster_rcnn_10000.h5'
