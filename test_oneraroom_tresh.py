@@ -149,12 +149,15 @@ for enc in ['rgb']:#,'depth_8bits']:
                 keep = nms(cls_dets, cfg.TEST.NMS)
                 cls_dets = cls_dets[keep, :]
 
-                keep_tresh_0=np.zeros((boxes.shape[0],1))
-                for k in range(cls_dets.shape[0]):
-                    x1_0=int(np.round(cls_dets[k,0]))
-                    y1_0=int(np.round(cls_dets[k,1]))
-                    x2_0=int(np.round(cls_dets[k,2]))
-                    y2_0=int(np.round(cls_dets[k,3]))
+
+                inds_0_tresh=[np.mean(im_0[cls_boxes[k,1]:cls_boxes[k,3],cls_boxes[k,0]:cls_boxes[k,2],:]) < tresh_0 for k in range(cls_boxes.shape[0])]
+                cls_boxes_0_removed=cls_boxes[inds_0_tresh,:]
+                for k in range(cls_boxes_0_removed.shape[0]):
+                    print i,k
+                    x1_0=int(np.round(cls_boxes_0_removed[k,0]))
+                    y1_0=int(np.round(cls_boxes_0_removed[k,1]))
+                    x2_0=int(np.round(cls_boxes_0_removed[k,2]))
+                    y2_0=int(np.round(cls_boxes_0_removed[k,3]))
                     im2show[y1_0:y2_0,x1_0:x2_0,0:2] = 0*im2show[y1_0:y2_0,x1_0:x2_0,0:2]
                     # break
 

@@ -138,42 +138,29 @@ def test_net_x(net_x, imdb_0, imdb_1, max_per_image=300, thresh=0.05, vis=False)
         detect_time = _t['im_detect'].toc(average=False)
 
 
-
+        # #apply intensity treshold
+        # # make a keep vector
+        # # print boxes_0.shape
+        # keep_tresh_0=np.zeros((boxes_0.shape[0],1))
+        # for k in range(boxes_0.shape[0]):
+        #     x1_0=int(np.round(boxes_0[k,0]))
+        #     y1_0=int(np.round(boxes_0[k,1]))
+        #     x2_0=int(np.round(boxes_0[k,2]))
+        #     y2_0=int(np.round(boxes_0[k,3]))
+        #     im_0[y1_0:y2_0,x1_0:x2_0,:] = 0*im_0[y1_0:y2_0,x1_0:x2_0,:]
+        #     # break
+        #
+        #
+        #     # extractedbox = im_0[x1_0:x2_0,y1_0:y2_0]
+        #     # extractedbox = 0*extractedbox
+        #     #compute mean of extractedbox
+        #     # if np.mean(extractedbox)>tresh_0:
+        #     #     keep_tresh_0[k]=1
+        #     #change an indice in a "keep" vector
+        # #filter boxes thanks to "keep" vector
+        # #inds_tresh_0 = np.where(np.mean(im_0[boxes_0[k,0]:boxes_0[k,2],boxes_0[k,1]:boxes_0[k,3]]) > tresh_0)[0]
 
         _t['misc'].tic()
-
-        #apply intensity treshold
-        # make a keep vector
-        # print boxes_0.shape
-        keep_tresh_0=np.zeros((boxes_0.shape[0],1))
-        for k in range(boxes_0.shape[0]):
-            x1_0=int(np.round(boxes_0[k,0]))
-            y1_0=int(np.round(boxes_0[k,1]))
-            x2_0=int(np.round(boxes_0[k,2]))
-            y2_0=int(np.round(boxes_0[k,3]))
-            im_0[y1_0:y2_0,x1_0:x2_0,:] = 0*im_0[y1_0:y2_0,x1_0:x2_0,:]
-            # break
-
-
-        keep_tresh_1=np.zeros((boxes_1.shape[0],1))
-        for k in range(boxes_1.shape[0]):
-            x1_1=int(np.round(boxes_1[k,0]))
-            y1_1=int(np.round(boxes_1[k,1]))
-            x2_1=int(np.round(boxes_1[k,2]))
-            y2_1=int(np.round(boxes_1[k,3]))
-            im_0[y1_1:y2_1,x1_1:x2_1,0] = im_1[y1_1:y2_1,x1_1:x2_1,0]
-
-            # extractedbox = im_0[x1_0:x2_0,y1_0:y2_0]
-            # extractedbox = 0*extractedbox
-            #compute mean of extractedbox
-            # if np.mean(extractedbox)>tresh_0:
-            #     keep_tresh_0[k]=1
-            #change an indice in a "keep" vector
-        #filter boxes thanks to "keep" vector
-        #inds_tresh_0 = np.where(np.mean(im_0[boxes_0[k,0]:boxes_0[k,2],boxes_0[k,1]:boxes_0[k,3]]) > tresh_0)[0]
-
-
-
         if vis or sav:
             # im2show = np.copy(im[:, :, (2, 1, 0)])
             im2show = np.copy(im_0)
@@ -188,7 +175,12 @@ def test_net_x(net_x, imdb_0, imdb_1, max_per_image=300, thresh=0.05, vis=False)
 
             cls_scores_0 = scores_0[inds_0, j]
             cls_scores_1 = scores_1[inds_1, j]
-            cls_scores_x = np.hstack((cls_scores_0,cls_scores_1))
+
+
+
+            tresh_0=20
+
+
 
             # print cls_scores_0.shape
             # print cls_scores_1.shape
@@ -196,7 +188,19 @@ def test_net_x(net_x, imdb_0, imdb_1, max_per_image=300, thresh=0.05, vis=False)
 
             cls_boxes_0 = boxes_0[inds_0, j * 4:(j + 1) * 4]
             cls_boxes_1 = boxes_1[inds_1, j * 4:(j + 1) * 4]
+
+
+
+            # inds_0_tresh=[np.mean(im_0[boxes_0[k,1]:boxes_0[k,3],boxes_0[k,0]:boxes_0[k,2],:]) < tresh_0 for k in range(cls_boxes_0.shape[0])]
+            # cls_boxes_0_removed=cls_boxes_0[inds_0_tresh,:]
+
+
+            cls_scores_x = np.hstack((cls_scoes_0,cls_scores_1))
             cls_boxes_x = np.vstack((cls_boxes_0,cls_boxes_1))
+
+
+
+
 
             # print cls_boxes_0.shape
             # print cls_boxes_1.shape
