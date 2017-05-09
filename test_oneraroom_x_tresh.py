@@ -145,7 +145,7 @@ def test_net_x(net_x, imdb_0, imdb_1, max_per_image=300, thresh=0.05, vis=False)
         #apply intensity treshold
         # make a keep vector
         print boxes_0.shape
-        keep_tresh_0=np.zeros(boxes_0.shape[0],1)
+        keep_tresh_0=np.zeros((boxes_0.shape[0],1))
         for k in range(boxes_0.shape[0]):
             x1_0=boxes_0[k,0]
             y1_0=boxes_0[k,1]
