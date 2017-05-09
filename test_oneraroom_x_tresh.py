@@ -161,7 +161,7 @@ def test_net_x(net_x, imdb_0, imdb_1, max_per_image=300, thresh=0.05, vis=False)
             y1_1=int(np.round(boxes_1[k,1]))
             x2_1=int(np.round(boxes_1[k,2]))
             y2_1=int(np.round(boxes_1[k,3]))
-            im_1[y1_1:y2_1,x1_1:x2_1,:] = 0*im_1[y1_1:y2_1,x1_1:x2_1,0:2]
+            im_1[y1_1:y2_1,x1_1:x2_1,0:2] = 0*im_1[y1_1:y2_1,x1_1:x2_1,0:2]
             break
             # extractedbox = im_0[x1_0:x2_0,y1_0:y2_0]
             # extractedbox = 0*extractedbox
