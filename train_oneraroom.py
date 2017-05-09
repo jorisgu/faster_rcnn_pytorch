@@ -79,7 +79,7 @@ print "Configuring parameters..."
 # exp_name = 'vgg16_02-19_13-24'
 start_step = 0
 # start_step = 200000
-end_step = 20000
+end_step = 10000
 lr_decay_steps = {100000, 150000, 200000, 300000, 350000}
 lr_decay = 1./10
 rand_seed = None #1024
@@ -89,7 +89,7 @@ lr = 0.001
 
 
 disp_interval = 200
-save_interval = 10000
+save_interval = 5000
 
 
 
