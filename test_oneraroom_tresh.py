@@ -164,7 +164,7 @@ for enc in ['rgb']:#,'depth_8bits']:
                     # break
 
                 if vis:
-                    im2show = vis_detections(im2show, imdb.classes[j], cls_dets)
+                    im2show = vis_detections(im2show, imdb.classes[j], cls_dets,tresh)
                 all_boxes[j][i] = cls_dets
 
             # Limit to max_per_image detections *over all classes*
