@@ -23,6 +23,7 @@ def mkdir_p(path):
         else:
             raise
 
+
 # hyper-parameters
 # ------------zz
 pytorchpath = os.environ['PWD']+'/'
@@ -33,7 +34,7 @@ imdb_train_name_1 = 'oneraroom_2017_no_static_depth_8bits'
 imdb_test_name_0 = 'oneraroom_static_monotonous_rgb'
 imdb_test_name_1 = 'oneraroom_static_monotonous_depth_8bits'
 
-save_name = 'oneraroom_x_tresh_2017_no_static_on_static_monotonous_rgbd_10000'
+save_name = 'oneraroom_x_thresh_2017_no_static_on_static_monotonous_rgbd_10000'
 
 trained_model_0 = pytorchpath+'models/'+imdb_train_name_0+'/faster_rcnn_10000.h5'
 trained_model_1 = pytorchpath+'models/'+imdb_train_name_1+'/faster_rcnn_10000.h5'
@@ -62,8 +63,28 @@ if rand_seed is not None:
 # load config
 cfg_from_file(cfg_file)
 
+def filterThresh(cls_dets,im,thresh=30):
+    if len(im.shape)>2:
+        means=np.asarray([np.mean(im[int(np.round(cls_dets[k,1])):int(np.round(cls_dets[k,3])),int(np.round(cls_dets[k,0])):int(np.round(cls_dets[k,2])),:]) for k in range(cls_dets.shape[0])])
+    elif len(im.shape)==2:
+        means=np.asarray([np.mean(im[int(np.round(cls_dets[k,1])):int(np.round(cls_dets[k,3])),int(np.round(cls_dets[k,0])):int(np.round(cls_dets[k,2]))]) for k in range(cls_dets.shape[0])])
+    else:
+        print "Error in image shape format",im.shape, ": returning without filtering"
+        return cls_dets[inds,:]
+    inds = np.where(means>thresh)[0]
+    return cls_dets[inds,:]
 
-def vis_detections(im, class_name, dets, thresh=0.8):
+
+def filterShape(cls_dets,ratio=2.5):
+    try:
+        ratios=np.asarray([np.max(((cls_dets[k,3]-cls_dets[k,1])/(cls_dets[k,2]-cls_dets[k,0]),(cls_dets[k,2]-cls_dets[k,0])/(cls_dets[k,3]-cls_dets[k,1]))) for k in range(cls_dets.shape[0])])
+    except:
+        print "Error in shape filtering : returning without filtering"
+        return cls_dets[inds,:]
+    inds = np.where(ratios>ratio)[0]
+    return cls_dets[inds,:]
+
+def vis_detections(im, class_name, dets, thresh=0.5):
     """Visual debugging of detections."""
     for i in range(np.minimum(10, dets.shape[0])):
         bbox = tuple(int(np.round(x)) for x in dets[i, :4])
@@ -137,29 +158,6 @@ def test_net_x(net_x, imdb_0, imdb_1, max_per_image=300, thresh=0.05, vis=False)
         scores_0, scores_1, boxes_0, boxes_1 = im_detect(net_x, im_0, im_1)
         detect_time = _t['im_detect'].toc(average=False)
 
-
-        # #apply intensity treshold
-        # # make a keep vector
-        # # print boxes_0.shape
-        # keep_tresh_0=np.zeros((boxes_0.shape[0],1))
-        # for k in range(boxes_0.shape[0]):
-        #     x1_0=int(np.round(boxes_0[k,0]))
-        #     y1_0=int(np.round(boxes_0[k,1]))
-        #     x2_0=int(np.round(boxes_0[k,2]))
-        #     y2_0=int(np.round(boxes_0[k,3]))
-        #     im_0[y1_0:y2_0,x1_0:x2_0,:] = 0*im_0[y1_0:y2_0,x1_0:x2_0,:]
-        #     # break
-        #
-        #
-        #     # extractedbox = im_0[x1_0:x2_0,y1_0:y2_0]
-        #     # extractedbox = 0*extractedbox
-        #     #compute mean of extractedbox
-        #     # if np.mean(extractedbox)>tresh_0:
-        #     #     keep_tresh_0[k]=1
-        #     #change an indice in a "keep" vector
-        # #filter boxes thanks to "keep" vector
-        # #inds_tresh_0 = np.where(np.mean(im_0[boxes_0[k,0]:boxes_0[k,2],boxes_0[k,1]:boxes_0[k,3]]) > tresh_0)[0]
-
         _t['misc'].tic()
         if vis or sav:
             # im2show = np.copy(im[:, :, (2, 1, 0)])
@@ -170,44 +168,28 @@ def test_net_x(net_x, imdb_0, imdb_1, max_per_image=300, thresh=0.05, vis=False)
 
             inds_0 = np.where(scores_0[:, j] > thresh)[0]
             inds_1 = np.where(scores_1[:, j] > thresh)[0]
-            # print inds_0.shape
-            # print inds_1.shape
 
             cls_scores_0 = scores_0[inds_0, j]
-            cls_scores_1 = scores_1[inds_1, j]
-
-
-
-            tresh_0=20
-
-
-
-            # print cls_scores_0.shape
-            # print cls_scores_1.shape
-            # print cls_scores_x.shape
-
             cls_boxes_0 = boxes_0[inds_0, j * 4:(j + 1) * 4]
+            cls_dets_0 = np.hstack((cls_boxes_0, cls_scores_0[:, np.newaxis])).astype(np.float32, copy=False)
+
+            cls_scores_1 = scores_1[inds_1, j]
             cls_boxes_1 = boxes_1[inds_1, j * 4:(j + 1) * 4]
+            cls_dets_1 = np.hstack((cls_boxes_1, cls_scores_1[:, np.newaxis])).astype(np.float32, copy=False)
+
+
+            cls_dets_0 = filterThresh(cls_dets_0,im_0,10)
+            cls_dets_1 = filterThresh(cls_dets_1,im_1,10)
 
 
 
-            # inds_0_tresh=[np.mean(im_0[boxes_0[k,1]:boxes_0[k,3],boxes_0[k,0]:boxes_0[k,2],:]) < tresh_0 for k in range(cls_boxes_0.shape[0])]
-            # cls_boxes_0_removed=cls_boxes_0[inds_0_tresh,:]
-
-
-            cls_scores_x = np.hstack((cls_scoes_0,cls_scores_1))
+            cls_scores_x = np.hstack((cls_scores_0,cls_scores_1))
             cls_boxes_x = np.vstack((cls_boxes_0,cls_boxes_1))
 
+            cls_dets_x = np.vstack((cls_dets_0, cls_dets_1))
 
 
-
-
-            # print cls_boxes_0.shape
-            # print cls_boxes_1.shape
-            # print cls_boxes_x.shape
-
-            # cls_dets_0 = np.hstack((cls_boxes_, cls_scores_0[:, np.newaxis])).astype(np.float32, copy=False)
-            cls_dets_x = np.hstack((cls_boxes_x, cls_scores_x[:, np.newaxis])).astype(np.float32, copy=False)
+            cls_dets_x = filterShape(cls_dets_x)
 
             keep = nms(cls_dets_x, cfg.TEST.NMS)
             cls_dets_x = cls_dets_x[keep, :]

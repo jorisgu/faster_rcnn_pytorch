@@ -28,7 +28,7 @@ def mkdir_p(path):
 pytorchpath = '/home/jguerry/workspace/jg_dl/jg_pyt/'
 
 
-for enc in ['rgb']:#,'depth_8bits']:
+for enc in ['depth_8bits','rgb']:
     print enc
     imdb_name = 'oneraroom_static_monotonous_'+enc
     imdb_model = 'oneraroom_2017_no_static_'+enc
@@ -52,7 +52,7 @@ for enc in ['rgb']:#,'depth_8bits']:
 
 
     max_per_image = 300
-    thresh = 0.5
+    thresh = 0.75
     vis = True
     sav = True
 
@@ -64,6 +64,27 @@ for enc in ['rgb']:#,'depth_8bits']:
 
     # load config
     cfg_from_file(cfg_file)
+
+    def filterThresh(cls_dets,im,thresh=30):
+        if len(im.shape)>2:
+            means=np.asarray([np.mean(im[int(np.round(cls_dets[k,1])):int(np.round(cls_dets[k,3])),int(np.round(cls_dets[k,0])):int(np.round(cls_dets[k,2])),:]) for k in range(cls_dets.shape[0])])
+        elif len(im.shape)==2:
+            means=np.asarray([np.mean(im[int(np.round(cls_dets[k,1])):int(np.round(cls_dets[k,3])),int(np.round(cls_dets[k,0])):int(np.round(cls_dets[k,2]))]) for k in range(cls_dets.shape[0])])
+        else:
+            print "Error in image shape format",im.shape, ": returning without filtering"
+            return cls_dets[inds,:]
+        inds = np.where(means>thresh)[0]
+        return cls_dets[inds,:]
+
+
+    def filterShape(cls_dets,ratio=2.5):
+        try:
+            ratios=np.asarray([np.max(((cls_dets[k,3]-cls_dets[k,1])/(cls_dets[k,2]-cls_dets[k,0]),(cls_dets[k,2]-cls_dets[k,0])/(cls_dets[k,3]-cls_dets[k,1]))) for k in range(cls_dets.shape[0])])
+        except:
+            print "Error in shape filtering : returning without filtering"
+            return cls_dets[inds,:]
+        inds = np.where(ratios>ratio)[0]
+        return cls_dets[inds,:]
 
 
     def vis_detections(im, class_name, dets, thresh=0.8, mean=None):
@@ -150,25 +171,19 @@ for enc in ['rgb']:#,'depth_8bits']:
                 cls_boxes = boxes[inds, j * 4:(j + 1) * 4]
                 cls_dets = np.hstack((cls_boxes, cls_scores[:, np.newaxis])) \
                     .astype(np.float32, copy=False)
+
+
+                cls_dets = filterThresh(cls_dets,im,10)
+                cls_dets = filterShape(cls_dets)
+
                 keep = nms(cls_dets, cfg.TEST.NMS)
                 cls_dets = cls_dets[keep, :]
 
-                thresh_0=5
-                inds_0_thresh=[np.mean(im[cls_dets[k,1]:cls_dets[k,3],cls_dets[k,0]:cls_dets[k,2],:]) for k in range(cls_dets.shape[0])]
-                cls_boxes_0_removed=cls_dets #[inds_0_thresh,:]
-                for k in range(cls_boxes_0_removed.shape[0]):
-                    print i,k
-                    x1_0=int(np.round(cls_boxes_0_removed[k,0]))
-                    y1_0=int(np.round(cls_boxes_0_removed[k,1]))
-                    x2_0=int(np.round(cls_boxes_0_removed[k,2]))
-                    y2_0=int(np.round(cls_boxes_0_removed[k,3]))
-                    im2show[y1_0:y2_0,x1_0:x2_0,0] = inds_0_thresh[k]*np.ones((y2_0-y1_0,x2_0-x1_0))
-                    im2show[y1_0:y2_0,x1_0:x2_0,1] = inds_0_thresh[k]*np.ones((y2_0-y1_0,x2_0-x1_0))
-                    im2show[y1_0:y2_0,x1_0:x2_0,2] = inds_0_thresh[k]*np.ones((y2_0-y1_0,x2_0-x1_0))
-                    # break
+                # cls_dets = filterThresh(cls_dets,im,30)
+
 
                 if vis:
-                    im2show = vis_detections(im2show, imdb.classes[j], cls_dets,thresh,inds_0_thresh)
+                    im2show = vis_detections(im2show, imdb.classes[j], cls_dets,thresh)
                 all_boxes[j][i] = cls_dets
 
             # Limit to max_per_image detections *over all classes*
