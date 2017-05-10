@@ -149,16 +149,18 @@ for enc in ['rgb']:#,'depth_8bits']:
                 keep = nms(cls_dets, cfg.TEST.NMS)
                 cls_dets = cls_dets[keep, :]
 
-                tresh_0=10
-                inds_0_tresh=[np.mean(im[cls_dets[k,1]:cls_dets[k,3],cls_dets[k,0]:cls_dets[k,2],:]) < tresh_0 for k in range(cls_dets.shape[0])]
-                cls_boxes_0_removed=cls_dets[inds_0_tresh,:]
+                tresh_0=5
+                inds_0_tresh=[np.mean(im[cls_dets[k,1]:cls_dets[k,3],cls_dets[k,0]:cls_dets[k,2],:]) for k in range(cls_dets.shape[0])]
+                cls_boxes_0_removed=cls_dets #[inds_0_tresh,:]
                 for k in range(cls_boxes_0_removed.shape[0]):
                     print i,k
                     x1_0=int(np.round(cls_boxes_0_removed[k,0]))
                     y1_0=int(np.round(cls_boxes_0_removed[k,1]))
                     x2_0=int(np.round(cls_boxes_0_removed[k,2]))
                     y2_0=int(np.round(cls_boxes_0_removed[k,3]))
-                    im2show[y1_0:y2_0,x1_0:x2_0,0:2] = 0*im2show[y1_0:y2_0,x1_0:x2_0,0:2]
+                    im2show[y1_0:y2_0,x1_0:x2_0,0] = inds_0_tresh[k]*np.ones((y2_0-y1_0,x2_0-x1_0,1))
+                    im2show[y1_0:y2_0,x1_0:x2_0,1] = inds_0_tresh[k]*np.ones((y2_0-y1_0,x2_0-x1_0,1))
+                    im2show[y1_0:y2_0,x1_0:x2_0,2] = inds_0_tresh[k]*np.ones((y2_0-y1_0,x2_0-x1_0,1))
                     # break
 
                 if vis:
