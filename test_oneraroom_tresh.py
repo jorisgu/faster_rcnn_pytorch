@@ -38,8 +38,8 @@ for enc in ['rgb']:#,'depth_8bits']:
 
 
     output_dir = pytorchpath+'output/faster_rcnn_oneraroom_exp/'
-    output_dir_detections = output_dir+imdb_name+'/detections_tresh_'+save_name+'/'
-    det_file = output_dir+imdb_name+'/detections_tresh_'+save_name+'.pkl'
+    output_dir_detections = output_dir+imdb_name+'/detections_thresh_'+save_name+'/'
+    det_file = output_dir+imdb_name+'/detections_thresh_'+save_name+'.pkl'
 
     mkdir_p(output_dir_detections)
 
@@ -149,22 +149,22 @@ for enc in ['rgb']:#,'depth_8bits']:
                 keep = nms(cls_dets, cfg.TEST.NMS)
                 cls_dets = cls_dets[keep, :]
 
-                tresh_0=5
-                inds_0_tresh=[np.mean(im[cls_dets[k,1]:cls_dets[k,3],cls_dets[k,0]:cls_dets[k,2],:]) for k in range(cls_dets.shape[0])]
-                cls_boxes_0_removed=cls_dets #[inds_0_tresh,:]
+                thresh_0=5
+                inds_0_thresh=[np.mean(im[cls_dets[k,1]:cls_dets[k,3],cls_dets[k,0]:cls_dets[k,2],:]) for k in range(cls_dets.shape[0])]
+                cls_boxes_0_removed=cls_dets #[inds_0_thresh,:]
                 for k in range(cls_boxes_0_removed.shape[0]):
                     print i,k
                     x1_0=int(np.round(cls_boxes_0_removed[k,0]))
                     y1_0=int(np.round(cls_boxes_0_removed[k,1]))
                     x2_0=int(np.round(cls_boxes_0_removed[k,2]))
                     y2_0=int(np.round(cls_boxes_0_removed[k,3]))
-                    im2show[y1_0:y2_0,x1_0:x2_0,0] = inds_0_tresh[k]*np.ones((y2_0-y1_0,x2_0-x1_0))
-                    im2show[y1_0:y2_0,x1_0:x2_0,1] = inds_0_tresh[k]*np.ones((y2_0-y1_0,x2_0-x1_0))
-                    im2show[y1_0:y2_0,x1_0:x2_0,2] = inds_0_tresh[k]*np.ones((y2_0-y1_0,x2_0-x1_0))
+                    im2show[y1_0:y2_0,x1_0:x2_0,0] = inds_0_thresh[k]*np.ones((y2_0-y1_0,x2_0-x1_0))
+                    im2show[y1_0:y2_0,x1_0:x2_0,1] = inds_0_thresh[k]*np.ones((y2_0-y1_0,x2_0-x1_0))
+                    im2show[y1_0:y2_0,x1_0:x2_0,2] = inds_0_thresh[k]*np.ones((y2_0-y1_0,x2_0-x1_0))
                     # break
 
                 if vis:
-                    im2show = vis_detections(im2show, imdb.classes[j], cls_dets,tresh)
+                    im2show = vis_detections(im2show, imdb.classes[j], cls_dets,thresh)
                 all_boxes[j][i] = cls_dets
 
             # Limit to max_per_image detections *over all classes*
