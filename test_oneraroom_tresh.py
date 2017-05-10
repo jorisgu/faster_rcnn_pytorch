@@ -66,7 +66,7 @@ for enc in ['rgb']:#,'depth_8bits']:
     cfg_from_file(cfg_file)
 
 
-    def vis_detections(im, class_name, dets, thresh=0.8):
+    def vis_detections(im, class_name, dets, thresh=0.8, mean=None):
         """Visual debugging of detections."""
         if 'epth' in imdb_name:
             cv2.normalize(im, im, 0, 255, cv2.NORM_MINMAX)
@@ -77,6 +77,10 @@ for enc in ['rgb']:#,'depth_8bits']:
                 cv2.rectangle(im, bbox[0:2], bbox[2:4], (255, 0, 0), 4)
                 cv2.putText(im, '%s: %.3f' % (class_name, score), (bbox[0], bbox[1] + 15), cv2.FONT_HERSHEY_PLAIN,
                             1.0, (0, 0, 255), thickness=1)
+                if mean is not None:
+                    bb_mean = mean[i]
+                    cv2.putText(im, '%s: %.3f' % ('mean', bb_mean), (bbox[0], bbox[1] - 25), cv2.FONT_HERSHEY_PLAIN,
+                                1.0, (0, 0, 255), thickness=1)
         return im
 
 
@@ -164,7 +168,7 @@ for enc in ['rgb']:#,'depth_8bits']:
                     # break
 
                 if vis:
-                    im2show = vis_detections(im2show, imdb.classes[j], cls_dets,thresh)
+                    im2show = vis_detections(im2show, imdb.classes[j], cls_dets,thresh,inds_0_thresh)
                 all_boxes[j][i] = cls_dets
 
             # Limit to max_per_image detections *over all classes*
