@@ -48,6 +48,8 @@ for enc in ['rgb']:   #,'depth_8bits'
 
 
     cfg_file = pytorchpath+'experiments/cfgs/faster_rcnn_end2end_oneraroom.yml'
+
+    cfg.keepEmptySamples=True
     rand_seed = 1024
 
 
@@ -149,7 +151,7 @@ for enc in ['rgb']:   #,'depth_8bits'
         # timers
         _t = {'im_detect': Timer(), 'misc': Timer()}
         # det_file = os.path.join(output_dir, 'detections.pkl')
-
+        old_dets=None
         for i in range(num_images):
 
             im = cv2.imread(imdb.image_path_at(i))
@@ -178,18 +180,48 @@ for enc in ['rgb']:   #,'depth_8bits'
 
                 keep = nms(cls_dets, cfg.TEST.NMS)
                 cls_dets = cls_dets[keep, :]
+                #check if new dets were there before,
+                # if not then : the former detection was a misdetection
 
-                # cls_dets = filterThresh(cls_dets,im,30)
 
 
                 if vis:
                     im2show = vis_detections(im2show, imdb.classes[j], cls_dets,thresh)
                 all_boxes[j][i] = cls_dets
+                if i>0:
+                    if len(all_boxes[j][i-1])>0:
+                        #  print all_boxes[j][i-1]
+                        old_cls_dets=all_boxes[j][i-1]
+                        keep=np.zeros((old_cls_dets.shape[0]))
+                        for l in range(old_cls_dets.shape[0]):
+
+                            #compute IoU
+                            old_x1 = old_cls_dets[l, 0]
+                            old_y1 = old_cls_dets[l, 1]
+                            old_x2 = old_cls_dets[l, 2]
+                            old_y2 = old_cls_dets[l, 3]
+                            area = (old_x2 - old_x1 + 1.) * (old_y2 - old_y1 + 1.)
+
+                            if len(all_boxes[j][i])>0:
+                                for k in range(cls_dets.shape[0]):
+                                    new_x1 = cls_dets[k,0]
+                                    new_y1 = cls_dets[k,1]
+                                    new_x2 = cls_dets[k,2]
+                                    new_y2 = cls_dets[k,3]
+                                    w = max(0.,min(old_x2, new_x2) - max(old_x1, new_x1) + 1.)
+                                    h = max(0.,min(old_y2, new_y2) - max(old_y1, new_y1) + 1.)
+                                    inter = w * h
+                                    iou=inter/area
+                                    if iou>0.5:
+                                        keep[l]=1
+
+                        for l in range(old_cls_dets.shape[0]):
+                            if not keep[l]:
+                                print "image[",i-1,"]", "false detection[",l,"]"
 
             # Limit to max_per_image detections *over all classes*
             if max_per_image > 0:
-                image_scores = np.hstack([all_boxes[j][i][:, -1]
-                                          for j in xrange(1, imdb.num_classes)])
+                image_scores = np.hstack([all_boxes[j][i][:, -1]for j in xrange(1, imdb.num_classes)])
                 if len(image_scores) > max_per_image:
                     image_thresh = np.sort(image_scores)[-max_per_image]
                     for j in xrange(1, imdb.num_classes):

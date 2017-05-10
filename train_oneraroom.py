@@ -34,7 +34,7 @@ pytorchpath = os.environ['PWD']+'/'
 # pytorchpath = '/home/jguerry/workspace/jg_dl/jg_pyt/'
 
 
-imdb_name = 'oneraroom_2017_no_parking_rgb'
+imdb_name = 'oneraroom_2017_no_parking_depth_8bits'
 output_dir = pytorchpath+'models/'+imdb_name+'/'
 
 cfg_file = pytorchpath+'experiments/cfgs/faster_rcnn_end2end_oneraroom.yml'

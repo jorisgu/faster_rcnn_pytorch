@@ -40,6 +40,7 @@ def mkdir_p(path):
 
 class oneraroom(imdb):
     def __init__(self, image_set, encoding, devkit_path=None):
+
         imdb.__init__(self, 'oneraroom_' + image_set+'_'+encoding)
         self._image_set = image_set
         self._devkit_path = self._get_default_path() if devkit_path is None else devkit_path
@@ -55,7 +56,17 @@ class oneraroom(imdb):
             self._image_ext = '.png'
 
         self._image_index = self._load_image_set_index()
-        self._remove_empty_samples()
+
+
+
+        if 'keepEmptySamples' in cfg.keys():
+            if cfg.keepEmptySamples :
+                print "Keeping empty samples."
+            else:
+                self._remove_empty_samples()
+        else:
+            self._remove_empty_samples()
+
         # Default to roidb handler
         #self._roidb_handler = self.selective_search_roidb
         self._roidb_handler = self.gt_roidb
