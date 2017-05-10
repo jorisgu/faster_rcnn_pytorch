@@ -158,9 +158,9 @@ for enc in ['rgb']:#,'depth_8bits']:
                     y1_0=int(np.round(cls_boxes_0_removed[k,1]))
                     x2_0=int(np.round(cls_boxes_0_removed[k,2]))
                     y2_0=int(np.round(cls_boxes_0_removed[k,3]))
-                    im2show[y1_0:y2_0,x1_0:x2_0,0] = inds_0_tresh[k]*np.ones((y2_0-y1_0,x2_0-x1_0,1))
-                    im2show[y1_0:y2_0,x1_0:x2_0,1] = inds_0_tresh[k]*np.ones((y2_0-y1_0,x2_0-x1_0,1))
-                    im2show[y1_0:y2_0,x1_0:x2_0,2] = inds_0_tresh[k]*np.ones((y2_0-y1_0,x2_0-x1_0,1))
+                    im2show[y1_0:y2_0,x1_0:x2_0,0] = inds_0_tresh[k]*np.ones((y2_0-y1_0,x2_0-x1_0))
+                    im2show[y1_0:y2_0,x1_0:x2_0,1] = inds_0_tresh[k]*np.ones((y2_0-y1_0,x2_0-x1_0))
+                    im2show[y1_0:y2_0,x1_0:x2_0,2] = inds_0_tresh[k]*np.ones((y2_0-y1_0,x2_0-x1_0))
                     # break
 
                 if vis:
