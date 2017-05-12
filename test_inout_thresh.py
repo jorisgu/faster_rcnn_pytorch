@@ -28,16 +28,16 @@ def mkdir_p(path):
 pytorchpath = '/home/jguerry/workspace/jg_dl/jg_pyt/'
 
 
-for enc in ['depth_8bits','rgb']:
+for enc in ['Depth','Images']:#,'rgb']:
     print enc
-    imdb_name = 'oneraroom_2017_dark_conditions_'+enc
-    imdb_model = 'oneraroom_2017_no_parking_'+enc
+    imdb_name = 'inout_test_'+enc
+    imdb_model = 'inout_train_'+enc
 
     save_name = imdb_model+'_on_'+imdb_name
     trained_model = pytorchpath+'models/'+imdb_model+'/faster_rcnn_10000.h5'
 
 
-    output_dir = pytorchpath+'output/faster_rcnn_oneraroom_exp/'
+    output_dir = pytorchpath+'output/faster_rcnn_inout_exp/'
     output_dir_detections = output_dir+imdb_name+'/detections_thresh_'+save_name+'/'
     det_file = output_dir+imdb_name+'/detections_thresh_'+save_name+'.pkl'
 
@@ -47,7 +47,7 @@ for enc in ['depth_8bits','rgb']:
 
 
 
-    cfg_file = pytorchpath+'experiments/cfgs/faster_rcnn_end2end_oneraroom.yml'
+    cfg_file = pytorchpath+'experiments/cfgs/faster_rcnn_end2end_inout.yml'
     rand_seed = 1024
 
 
@@ -173,8 +173,8 @@ for enc in ['depth_8bits','rgb']:
                     .astype(np.float32, copy=False)
 
 
-                cls_dets = filterThresh(cls_dets,im,10)
-                cls_dets = filterShape(cls_dets)
+                # cls_dets = filterThresh(cls_dets,im,10)
+                # cls_dets = filterShape(cls_dets)
 
                 keep = nms(cls_dets, cfg.TEST.NMS)
                 cls_dets = cls_dets[keep, :]

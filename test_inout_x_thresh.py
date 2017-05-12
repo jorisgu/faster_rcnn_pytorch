@@ -29,17 +29,17 @@ def mkdir_p(path):
 pytorchpath = os.environ['PWD']+'/'
 
 
-imdb_train_name_0 = 'oneraroom_2017_no_parking_rgb'
-imdb_train_name_1 = 'oneraroom_2017_no_parking_depth_8bits'
-imdb_test_name_0 = 'oneraroom_2017_dark_conditions_rgb'
-imdb_test_name_1 = 'oneraroom_2017_dark_conditions_depth_8bits'
+imdb_train_name_0 = 'inout_train_Images'
+imdb_train_name_1 = 'inout_train_Depth'
+imdb_test_name_0 = 'inout_test_Images'
+imdb_test_name_1 = 'inout_test_Depth'
 
-save_name = 'oneraroom_x_thresh_2017_no_parking_on_2017_dark_conditions_rgbd_10000'
+save_name = 'inout_x_thresh_train_on_test_rgbd_10000'
 
 trained_model_0 = pytorchpath+'models/'+imdb_train_name_0+'/faster_rcnn_10000.h5'
 trained_model_1 = pytorchpath+'models/'+imdb_train_name_1+'/faster_rcnn_10000.h5'
 
-output_dir = pytorchpath+'output/faster_rcnn_oneraroom_exp/'
+output_dir = pytorchpath+'output/faster_rcnn_inout_exp/'
 output_dir_detections = output_dir+save_name+'/detections/'
 det_file = output_dir+save_name+'/detections_'+save_name+'.pkl'
 
@@ -47,7 +47,7 @@ mkdir_p(output_dir_detections)
 
 
 
-cfg_file = pytorchpath+'experiments/cfgs/faster_rcnn_end2end_oneraroom.yml'
+cfg_file = pytorchpath+'experiments/cfgs/faster_rcnn_end2end_inout.yml'
 rand_seed = 1024
 
 max_per_image = 300
@@ -179,8 +179,8 @@ def test_net_x(net_x, imdb_0, imdb_1, max_per_image=300, thresh=0.05, vis=False)
             cls_dets_1 = np.hstack((cls_boxes_1, cls_scores_1[:, np.newaxis])).astype(np.float32, copy=False)
 
 
-            cls_dets_0 = filterThresh(cls_dets_0,im_0,10)
-            cls_dets_1 = filterThresh(cls_dets_1,im_1,10)
+            # cls_dets_0 = filterThresh(cls_dets_0,im_0,10)
+            # cls_dets_1 = filterThresh(cls_dets_1,im_1,10)
 
 
 
@@ -190,7 +190,7 @@ def test_net_x(net_x, imdb_0, imdb_1, max_per_image=300, thresh=0.05, vis=False)
             cls_dets_x = np.vstack((cls_dets_0, cls_dets_1))
 
 
-            cls_dets_x = filterShape(cls_dets_x)
+            # cls_dets_x = filterShape(cls_dets_x)
 
             keep = nms(cls_dets_x, cfg.TEST.NMS)
             cls_dets_x = cls_dets_x[keep, :]
