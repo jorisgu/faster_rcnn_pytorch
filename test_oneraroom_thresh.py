@@ -30,7 +30,7 @@ pytorchpath = '/home/jguerry/workspace/jg_dl/jg_pyt/'
 
 for enc in ['depth_8bits','rgb']:
     print enc
-    imdb_name = 'oneraroom_2017_dark_conditions_'+enc
+    imdb_name = 'oneraroom_2017_variable_room_'+enc
     imdb_model = 'oneraroom_2017_no_parking_'+enc
 
     save_name = imdb_model+'_on_'+imdb_name

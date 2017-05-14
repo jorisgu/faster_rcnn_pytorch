@@ -31,10 +31,10 @@ pytorchpath = os.environ['PWD']+'/'
 
 imdb_train_name_0 = 'oneraroom_2017_no_parking_rgb'
 imdb_train_name_1 = 'oneraroom_2017_no_parking_depth_8bits'
-imdb_test_name_0 = 'oneraroom_2017_dark_conditions_rgb'
-imdb_test_name_1 = 'oneraroom_2017_dark_conditions_depth_8bits'
+imdb_test_name_0 = 'oneraroom_2017_variable_room_rgb'
+imdb_test_name_1 = 'oneraroom_2017_variable_room_depth_8bits'
 
-save_name = 'oneraroom_x_thresh_2017_no_parking_on_2017_dark_conditions_rgbd_10000'
+save_name = 'oneraroom_x_thresh_2017_no_parking_on_2017_variable_room_rgbd_10000'
 
 trained_model_0 = pytorchpath+'models/'+imdb_train_name_0+'/faster_rcnn_10000.h5'
 trained_model_1 = pytorchpath+'models/'+imdb_train_name_1+'/faster_rcnn_10000.h5'
